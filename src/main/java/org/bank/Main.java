@@ -31,6 +31,7 @@ public class Main {
 
         bankOfficeService.addEmployee(bankOffice, employee, "уборщик", 4000D, true,
                 false);
+        System.out.println(employee);
 
         BankAtm bankAtm = new BankAtm(1, "RPG", Status.WORK, bank, bankOffice, employee, true,
                 false);

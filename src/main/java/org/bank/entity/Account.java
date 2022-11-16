@@ -11,9 +11,9 @@ public class Account {
         bank = null;
     }
 
-    public Account(Integer _id, User _user) {
-        id = _id;
-        user = _user;
+    public Account(Integer id, User user) {
+        this.id = id;
+        this.user = user;
         bank = null;
     }
 

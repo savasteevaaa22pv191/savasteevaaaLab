@@ -3,7 +3,7 @@ package org.bank.entity;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class Employee extends Human {
+public class Employee extends Person {
     private String jobTitle;
     private Bank bank;
     private Boolean remoteWork;

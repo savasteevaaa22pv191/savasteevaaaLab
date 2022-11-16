@@ -3,18 +3,18 @@ package org.bank.entity;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class Human {
+public class Person {
     protected Integer id;
     protected String name;
     protected Calendar dateBirth;
 
-    public Human() {
+    public Person() {
         id = -1;
         name = "";
         dateBirth = new GregorianCalendar();
     }
 
-    public Human(Integer _id, String _name, Calendar _dateBirth) {
+    public Person(Integer _id, String _name, Calendar _dateBirth) {
         id = _id;
         name = _name;
         dateBirth = _dateBirth;

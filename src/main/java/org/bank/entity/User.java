@@ -2,9 +2,8 @@ package org.bank.entity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Random;
 
-public class User extends Human {
+public class User extends Person {
     private String addressJob;
     private Double monthIncome;
     private Bank bank;
