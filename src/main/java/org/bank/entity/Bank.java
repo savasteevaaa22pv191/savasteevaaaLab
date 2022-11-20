@@ -1,18 +1,15 @@
 package org.bank.entity;
 
-import java.util.Random;
-
-
 public class Bank {
-    private Integer id;
+    private int id;
     private String name;
-    private Integer countOffice;
-    private Integer countAtm;
-    private Integer countEmployee;
-    private Integer countClient;
-    private Integer rating;
-    private Double money;
-    private Double interestRate;
+    private int countOffice;
+    private int countAtm;
+    private int countEmployee;
+    private int countClient;
+    private int rating;
+    private double money;
+    private double interestRate;
 
     public Bank() {
         id = -1;
@@ -21,25 +18,30 @@ public class Bank {
         countAtm = 0;
         countEmployee = 0;
         countClient = 0;
-
-        Random random = new Random();
-        rating = random.nextInt(100);
-        money = random.nextDouble(1000000);
-        interestRate = 0.0;
+        rating = 0;
+        money = 0;
+        interestRate = 0;
     }
 
-    public Bank(Integer _id, String _name) {
-        id = _id;
-        name = _name;
-        countOffice = 0;
-        countAtm = 0;
-        countEmployee = 0;
-        countClient = 0;
+    public Bank(int id, String name) {
+        this.id = id;
+        this.name = name;
+        this.countOffice = 0;
+        this.countAtm = 0;
+        this.countEmployee = 0;
+        this.countClient = 0;
+    }
 
-        Random random = new Random();
-        rating = random.nextInt(100);
-        money = random.nextDouble(1000000);
-        interestRate = 0.0;
+    public Bank(Bank bank) {
+        this.id = bank.getId();
+        this.name = bank.getName();
+        this.countOffice = bank.getCountOffice();
+        this.countAtm = bank.getCountAtm();
+        this.countEmployee = bank.getCountEmployee();
+        this.countClient = bank.getCountClient();
+        this.rating = bank.getRating();
+        this.money = bank.getMoney();
+        this.interestRate = bank.getInterestRate();
     }
 
     @Override
@@ -55,105 +57,75 @@ public class Bank {
                 "Процентная ставка: " + String.format("%.2f", interestRate) + "\n";
     }
 
-    public void setId(Integer _id) {
-        if (_id >= 0) {
-            id = _id;
-        } else {
-            System.out.println("Ошибка! ID не может быть отрицательным числом!");
-        }
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setName(String _name) {
-        name = _name;
+    public void setName(String name) {
+        this.name = name;
     }
+
     public String getName() {
         return name;
     }
 
-    public void setCountOffice(Integer count) {
-        if (count >= 0) {
-            countOffice = count;
-        } else {
-            System.out.println("Ошибка! Кол-во офисов не может быть отрицательным числом!");
-        }
+    public void setCountOffice(int count) {
+        this.countOffice = count;
     }
 
-    public Integer getCountOffice() {
+    public int getCountOffice() {
         return countOffice;
     }
 
-    public void setCountAtm(Integer count) {
-        if (count >= 0) {
-            countAtm = count;
-        } else {
-            System.out.println("Ошибка! Кол-во банкоматов не может быть отрицательным числом!");
-        }
+    public void setCountAtm(int count) {
+        this.countAtm = count;
     }
 
-    public Integer getCountAtm() {
+    public int getCountAtm() {
         return countAtm;
     }
 
-    public void setCountEmployee(Integer count) {
-        if (count >= 0) {
-            countEmployee = count;
-        } else {
-            System.out.println("Ошибка! Кол-во работников не может быть отрицательным числом!");
-        }
+    public void setCountEmployee(int count) {
+        this.countEmployee = count;
     }
 
-    public Integer getCountEmployee() {
+    public int getCountEmployee() {
         return countEmployee;
     }
 
-    public void setCountClient(Integer count) {
-        if (count >= 0) {
-            countClient = count;
-        } else {
-            System.out.println("Ошибка! Кол-во клиентов не может быть отрицательным числом!");
-        }
+    public void setCountClient(int count) {
+        this.countClient = count;
     }
 
-    public Integer getCountClient() {
+    public int getCountClient() {
         return countClient;
     }
 
-    public void setRating(Integer _rating) {
-        if ((_rating >= 0) && (_rating <= 100) ) {
-            rating = _rating;
-        } else {
-            System.out.println("Ошибка! Рейтинг должен быть в диапозоне [0; 100]");
-        }
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
-    public Integer getRating() {
+    public int getRating() {
         return rating;
     }
 
-    public void setMoney(Double _money) {
-        if (_money >= 0) {
-            money = _money;
-        } else {
-            System.out.println("Ошибка! Кол-во денег не может быть отрицательным числом!");
-        }
+    public void setMoney(double money) {
+        this.money = money;
     }
 
-    public Double getMoney() {
+    public double getMoney() {
         return money;
     }
 
-    public void setInterestRate(Double rate) {
-        if ((rate >= 2) && (rate <=20)) {
-            interestRate = rate;
-        } else {
-            System.out.println("Ошибка! Процентная ставка должна быть в диапозоне [2; 20]");
-        }
+    public void setInterestRate(double rate) {
+        this.interestRate = rate;
     }
-    public Double getInterestRate() {
+
+    public double getInterestRate() {
         return interestRate;
     }
 }

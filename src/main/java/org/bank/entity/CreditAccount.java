@@ -1,26 +1,24 @@
 package org.bank.entity;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Random;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class CreditAccount extends Account {
-    private Calendar dateStart;
-    private Calendar dateEnd;
-    private Integer countMonth;
-    private Double money;
-    private Double monthPay;
-    private Double interestRate;
+    private LocalDate dateStart;
+    private LocalDate dateEnd;
+    private int countMonth;
+    private double money;
+    private double monthPay;
+    private double interestRate;
     private Employee employee;
     private PaymentAccount paymentAccount;
-
-    private Double remainingSum;
+    private double remainingSum;
 
     public CreditAccount() {
         super();
-        dateStart = new GregorianCalendar();
-        dateEnd = new GregorianCalendar();
+        dateStart = null;
+        dateEnd = null;
         countMonth = 0;
         money = 0.0;
         monthPay = 0.0;
@@ -30,19 +28,31 @@ public class CreditAccount extends Account {
         remainingSum = money;
     }
 
-    public CreditAccount(Integer _id, User _user, Calendar _dateStart, Integer _countMonth, Double _money,
-                         PaymentAccount _paymentAccount) {
-        super(_id, _user);
+    public CreditAccount(int id, User user, Bank bank, LocalDate dateStart, int countMonth, double money,
+                         Employee employee, PaymentAccount paymentAccount) {
+        super(id, user, bank);
+        this.dateStart = dateStart;
+        this.dateEnd = null;
+        this.countMonth = countMonth;
+        this.money = money;
+        this.monthPay = 0.0;
+        this.employee = employee;
+        this.paymentAccount = paymentAccount;
+        this.interestRate = 0;
+        this.remainingSum = this.money;
+    }
 
-        dateStart = _dateStart;
-        dateEnd = null;
-        setCountMonth(_countMonth);
-        setMoney(_money);
-        monthPay = 0.0;
-        employee = null;
-        paymentAccount = _paymentAccount;
-        interestRate = 0.0;
-        remainingSum = money;
+    public CreditAccount(CreditAccount creditAccount) {
+        super(creditAccount.getId(), creditAccount.getUser(), creditAccount.getBank());
+        this.dateStart = creditAccount.getDateStart();
+        this.dateEnd = creditAccount.getDateEnd();
+        this.countMonth = creditAccount.getCountMonth();
+        this.money = creditAccount.getMoney();
+        this.monthPay = creditAccount.getMonthPay();
+        this.employee = creditAccount.getEmployee();
+        this.paymentAccount = creditAccount.getPaymentAccount();
+        this.interestRate = creditAccount.getInterestRate();
+        this.remainingSum = creditAccount.getRemainingSum();
     }
 
     @Override
@@ -53,8 +63,8 @@ public class CreditAccount extends Account {
                 "Банк: " + (bank != null ? bank.getName() : "") + " \n" +
                 "Владелец: " + (user != null ? user.getName() : "") + "\n" +
                 "Суммма кредита: " + String.format("%.4f", money) + "\n" +
-                "Дата начала кредита: " + (dateStart != null ? fmt.format(dateStart.getTime()) : "") + "\n" +
-                "Дата окончания кредита: " + (dateEnd != null ? fmt.format(dateEnd.getTime()): "") + "\n" +
+                "Дата начала кредита: " + (dateStart != null ? dateStart.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) : "") + "\n" +
+                "Дата окончания кредита: " + (dateEnd != null ? dateEnd.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) : "") + "\n" +
                 "Кол-во месяцев: " + countMonth + "\n" +
                 "Ежемесячная выплата: " + String.format("%.4f", monthPay) + "\n" +
                 "Процентная ставка: " + String.format("%.2f", interestRate) + "\n" +
@@ -62,95 +72,75 @@ public class CreditAccount extends Account {
                 "ID платежного аккаунта: " + (paymentAccount != null ? paymentAccount.getId() : "") + "\n";
     }
 
-    public void setDateStart(Calendar date) {
+    public void setDateStart(LocalDate date) {
         dateStart = date;
     }
 
-    public Calendar getDateStart() {
+    public LocalDate getDateStart() {
         return dateStart;
     }
 
-    public void setDateEnd(Calendar date) {
+    public void setDateEnd(LocalDate date) {
         dateEnd = date;
     }
 
-    public Calendar getDateEnd() {
+    public LocalDate getDateEnd() {
         return dateEnd;
     }
 
-    public void setCountMonth(Integer count) {
-        if (count >= 0) {
-            countMonth = count;
-        } else {
-            System.out.println("Ошибка! Кол-во месяцев не может быть отрицательным числом!");
-        }
+    public void setCountMonth(int count) {
+        this.countMonth = count;
     }
 
-    public Integer getCountMonth() {
+    public int getCountMonth() {
         return countMonth;
     }
 
-    public void setMoney(Double _money) {
-        if (_money >= 0) {
-            money = _money;
-        } else {
-            System.out.println("Ошибка! Кол-во денег не может быть отрицательным числом!");
-        }
+    public void setMoney(double money) {
+        this.money = money;
     }
 
-    public Double getMoney() {
+    public double getMoney() {
         return money;
     }
 
-    public void setMonthPay(Double _monthPay) {
-        monthPay = _monthPay;
+    public void setMonthPay(double monthPay) {
+        this.monthPay = monthPay;
     }
 
-    public Double getMonthPay() {
+    public double getMonthPay() {
         return monthPay;
     }
 
-    public void setInterestRate(Double _interestRate) {
-        if (_interestRate < 0) {
-            System.out.println("Ошибка! Процентная ставка кредита не может быть отрицательным числом!");
-        } else {
-            if (bank != null) {
-                if (_interestRate <= bank.getInterestRate()) {
-                    interestRate = _interestRate;
-                } else {
-                    System.out.println("Ошибка! Процентная ставка кредита не может быть больше ставки банка!");
-                }
-            } else {
-                System.out.println("Ошибка! Нельзя установить процентную ставку кредита без банка!");
-            }
-        }
+    public void setInterestRate(double interestRate) {
+        this.interestRate = interestRate;
     }
 
-    public Double getInterestRate() {
+    public double getInterestRate() {
         return interestRate;
     }
 
-    public void setEmployee(Employee _employee) {
-        employee = _employee;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public Employee getEmployee() {
         return employee;
     }
 
-    public void setPaymentAccount(PaymentAccount _paymentAccount) {
-        paymentAccount = _paymentAccount;
+    public void setPaymentAccount(PaymentAccount paymentAccount) {
+        this.paymentAccount = paymentAccount;
     }
 
     public PaymentAccount getPaymentAccount() {
         return paymentAccount;
     }
 
-    public void setRemainingSum(Double sum) {
+    public void setRemainingSum(double sum) {
         remainingSum = sum;
     }
 
-    public Double getRemainingSum() {
+    public double getRemainingSum() {
         return remainingSum;
     }
 }

@@ -1,29 +1,70 @@
 package org.bank.service.impl;
 
-import org.bank.entity.Bank;
 import org.bank.entity.BankAtm;
 import org.bank.entity.BankOffice;
 import org.bank.entity.Employee;
 import org.bank.service.BankOfficeService;
+import org.bank.service.BankService;
 
 public class BankOfficeServiceImpl implements BankOfficeService {
 
     @Override
-    public void installAtm(BankOffice bankOffice, BankAtm bankAtm) {
+    public BankOffice create(BankOffice bankOffice) {
+        if (bankOffice != null) {
+
+            if (bankOffice.getId() < 0) {
+                System.out.println("Ошибка! ID не может быть отрицательным числом!");
+                return null;
+            }
+
+            if (bankOffice.getMoney() < 0) {
+                System.out.println("Ошибка! Кол-во денег не может быть отрицательным числом!");
+                return null;
+            }
+
+            if (bankOffice.getBank() != null) {
+                if (bankOffice.getBank().getMoney() < bankOffice.getMoney()) {
+                    System.out.println("Ошибка! Кол-во денег в офисе не может превышать кол-во денег в банке!");
+                    return null;
+                }
+            } else {
+                System.out.println("Ошибка! Нельзя создать офис без банка!");
+                return null;
+            }
+
+            if (bankOffice.getRentPrice() < 0) {
+                System.out.println("Ошибка! Стоимость аренды не может быть отрицательным числом!");
+                return null;
+            }
+
+            BankService bankService = new BankServiceImpl();
+            bankService.addOffice(bankOffice.getBank(), bankOffice);
+
+            return new BankOffice(bankOffice);
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean installAtm(BankOffice bankOffice, BankAtm bankAtm) {
         if ((bankOffice != null) && (bankAtm != null) && (bankOffice.getBank() != null)) {
             if (bankOffice.getIsInstallAtm()) {
                 bankOffice.setCountAtm(bankOffice.getCountAtm() + 1);
                 bankOffice.getBank().setCountAtm(bankOffice.getBank().getCountAtm() + 1);
                 bankAtm.setBankOffice(bankOffice);
                 bankAtm.setAddress(bankOffice.getAddress());
+                return true;
             } else {
                 System.out.println("В офисе " + bankOffice.getName() + " нельзя устанавливать банкоматы");
             }
         }
+
+        return false;
     }
 
     @Override
-    public void uninstallAtm(BankOffice bankOffice, Integer idAtm) {
+    public void uninstallAtm(BankOffice bankOffice, int idAtm) {
         if ((bankOffice != null) && (bankOffice.getBank() != null)) {
             // Тут должен быть поиск банкомата в офисе и его удаление, когда в офисе появится массив банкоматов
             //
@@ -35,7 +76,7 @@ public class BankOfficeServiceImpl implements BankOfficeService {
     }
 
     @Override
-    public void depositMoney(BankOffice bankOffice, Double sum) {
+    public void depositMoney(BankOffice bankOffice, double sum) {
         if ((bankOffice != null) && (bankOffice.getBank() != null)) {
 
             if (bankOffice.getIsPayInMoney()) {
@@ -48,7 +89,7 @@ public class BankOfficeServiceImpl implements BankOfficeService {
     }
 
     @Override
-    public void withdrawMoney(BankOffice bankOffice, Double sum) {
+    public void withdrawMoney(BankOffice bankOffice, double sum) {
         if ((bankOffice != null) && (bankOffice.getBank() != null)) {
 
             if (bankOffice.getIsGiveMoney()) {
@@ -67,21 +108,16 @@ public class BankOfficeServiceImpl implements BankOfficeService {
     }
 
     @Override
-    public void addEmployee(BankOffice bankOffice, Employee employee, String jobTitle, Double salary,
-                            Boolean isRemoteWork, Boolean isGiveCredit) {
+    public void addEmployee(BankOffice bankOffice, Employee employee) {
         if ((employee != null) && (bankOffice != null)) {
             employee.setOffice(bankOffice);
             employee.setBank(bankOffice.getBank());
-            employee.setJobTitle(jobTitle);
-            employee.setSalary(salary);
-            employee.setRemoteWork(isRemoteWork);
-            employee.setIsGiveCredit(isGiveCredit);
             employee.getBank().setCountEmployee(employee.getBank().getCountEmployee() + 1);
         }
     }
 
     @Override
-    public void removeEmployee(BankOffice bankOffice, Integer id) {
+    public void removeEmployee(BankOffice bankOffice, int id) {
         if ((bankOffice != null) && (bankOffice.getBank() != null)) {
 
             // Тут должен быть поиск работника в офисе и его удаление, когда в офисе появится массив работников

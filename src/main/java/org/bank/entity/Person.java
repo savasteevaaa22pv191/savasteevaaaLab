@@ -1,50 +1,45 @@
 package org.bank.entity;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
 
 public class Person {
-    protected Integer id;
+    protected int id;
     protected String name;
-    protected Calendar dateBirth;
+    protected LocalDate dateBirth;
 
     public Person() {
         id = -1;
         name = "";
-        dateBirth = new GregorianCalendar();
+        dateBirth = null;
     }
 
-    public Person(Integer _id, String _name, Calendar _dateBirth) {
-        id = _id;
-        name = _name;
-        dateBirth = _dateBirth;
+    public Person(int id, String name, LocalDate dateBirth) {
+        this.id = id;
+        this.name = name;
+        this.dateBirth = dateBirth;
     }
 
-    public void setId(Integer _id) {
-        if (_id >= 0) {
-            id = _id;
-        } else {
-            System.out.println("Ошибка! ID не может быть отрицательным числом!");
-        }
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setName(String _name) {
-        name = _name;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setDateBirth(Calendar date) {
+    public void setDateBirth(LocalDate date) {
         dateBirth = date;
     }
 
-    public Calendar getDateBirth() {
+    public LocalDate getDateBirth() {
         return dateBirth;
     }
 }

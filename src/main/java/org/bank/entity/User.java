@@ -1,15 +1,15 @@
 package org.bank.entity;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class User extends Person {
     private String addressJob;
-    private Double monthIncome;
+    private double monthIncome;
     private Bank bank;
     private CreditAccount creditAccount;
     private PaymentAccount paymentAccount;
-    private Integer creditRating;
+    private int creditRating;
 
     public User() {
         super();
@@ -21,23 +21,30 @@ public class User extends Person {
         creditRating = 0;
     }
 
-    public User(Integer _id, String _name, Calendar _dateBirth) {
-        super(_id, _name, _dateBirth);
-        addressJob = "";
-        monthIncome = 0.0;
-        bank = null;
-        creditAccount = null;
-        paymentAccount = null;
+    public User(int id, String name, LocalDate dateBirth, double monthIncome, String addressJob, Bank bank) {
+        super(id, name, dateBirth);
+        this.addressJob = addressJob;
+        this.monthIncome = monthIncome;
+        this.bank = bank;
         creditRating = 0;
+    }
+
+    public User(User user) {
+        super(user.getId(), user.getName(), user.getDateBirth());
+        this.addressJob = user.getAddressJob();
+        this.monthIncome = user.getMonthIncome();
+        this.bank = user.getBank();
+        creditAccount = user.getCreditAccount();
+        paymentAccount = user.getPaymentAccount();
+        creditRating = user.getCreditRating();
     }
 
     @Override
     public String toString() {
-        SimpleDateFormat fmt = new SimpleDateFormat("dd.MMM.yyyy");
 
         return "ID пользователя: " + id + "\n" +
                 "Имя пользователя: " + name + " \n" +
-                "Дата рождения: " + fmt.format(dateBirth.getTime()) + "\n" +
+                "Дата рождения: " + dateBirth.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + "\n" +
                 "Работа: " + addressJob + "\n" +
                 "Ежемесячный доход: " + String.format("%.4f", monthIncome) + "\n" +
                 "Банк: " + (bank != null ? bank.getName() : "") + "\n" +
@@ -54,20 +61,16 @@ public class User extends Person {
         return addressJob;
     }
 
-    public void setMonthIncome(Double _monthIncome) {
-        if ((_monthIncome >= 0) && (_monthIncome <= 10000)) {
-            monthIncome = _monthIncome;
-        } else {
-            System.out.println("Ошибка! Ежемесячный дохож не может быть отрицательным числом и не может превышать 10000!");
-        }
+    public void setMonthIncome(double monthIncome) {
+        this.monthIncome = monthIncome;
     }
 
-    public Double getMonthIncome() {
+    public double getMonthIncome() {
         return monthIncome;
     }
 
-    public void setBank(Bank _bank) {
-        bank = _bank;
+    public void setBank(Bank bank) {
+        this.bank = bank;
     }
 
     public Bank getBank() {
@@ -90,11 +93,11 @@ public class User extends Person {
         return paymentAccount;
     }
 
-    public void setCreditRating(Integer rating) {
+    public void setCreditRating(int rating) {
         creditRating = rating;
     }
 
-    public Integer getCreditRating() {
+    public int getCreditRating() {
         return creditRating;
     }
 }

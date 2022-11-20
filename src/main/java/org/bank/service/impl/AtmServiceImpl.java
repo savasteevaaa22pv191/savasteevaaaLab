@@ -4,19 +4,53 @@ import org.bank.entity.Bank;
 import org.bank.entity.BankAtm;
 import org.bank.entity.BankOffice;
 import org.bank.service.AtmService;
+import org.bank.service.BankOfficeService;
 import org.bank.utils.Status;
 
 public class AtmServiceImpl implements AtmService {
 
     @Override
-    public void depositMoney(BankAtm bankAtm, Double sum) {
+    public BankAtm create(BankAtm bankAtm) {
+        if (bankAtm != null) {
+
+            if (bankAtm.getId() < 0) {
+                System.out.println("Ошибка! ID не может быть отрицательным числом!");
+                return null;
+            }
+
+            if (bankAtm.getMoney() < 0) {
+                System.out.println("Ошибка! Кол-во денег не может быть отрицательным числом!");
+                return null;
+            }
+
+            if (bankAtm.getServicePrice() < 0) {
+                System.out.println("Ошибка! Стоимость обслуживания не может быть отрицательным числом!");
+                return null;
+            }
+
+            if (bankAtm.getBankOffice() == null) {
+                System.out.println("Ошибка! Нельзя создать банкомат без офиса!");
+                return null;
+            }
+
+            BankOfficeService bankOfficeService = new BankOfficeServiceImpl();
+            if (bankOfficeService.installAtm(bankAtm.getBankOffice(), bankAtm)) {
+                return new BankAtm(bankAtm);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public void depositMoney(BankAtm bankAtm, double sum) {
         if ((bankAtm != null) && (bankAtm.getBankOffice() != null) && (bankAtm.getBank() != null)) {
 
             if (bankAtm.getStatus() != Status.NOT_WORK) {
                 if (bankAtm.getIsPayInMoney()) {
                     BankOffice office = bankAtm.getBankOffice();
                     Bank bank = bankAtm.getBank();
-                    Double newSum = bankAtm.getMoney() + sum;
+                    double newSum = bankAtm.getMoney() + sum;
 
                     bankAtm.setMoney(newSum);
                     office.setMoney(office.getMoney() + newSum);
@@ -31,7 +65,7 @@ public class AtmServiceImpl implements AtmService {
     }
 
     @Override
-    public void withdrawMoney(BankAtm bankAtm, Double sum) {
+    public void withdrawMoney(BankAtm bankAtm, double sum) {
         if ((bankAtm != null) && (bankAtm.getBankOffice() != null) && (bankAtm.getBank() != null)) {
 
             if (bankAtm.getStatus() == Status.WORK) {
@@ -40,7 +74,7 @@ public class AtmServiceImpl implements AtmService {
 
                         BankOffice office = bankAtm.getBankOffice();
                         Bank bank = bankAtm.getBank();
-                        Double newSum = bankAtm.getMoney() - sum;
+                        double newSum = bankAtm.getMoney() - sum;
 
                         bankAtm.setMoney(newSum);
                         office.setMoney(office.getMoney() + newSum);

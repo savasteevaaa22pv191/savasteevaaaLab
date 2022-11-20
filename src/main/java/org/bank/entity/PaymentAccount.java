@@ -1,17 +1,21 @@
 package org.bank.entity;
 
 public class PaymentAccount extends Account {
-    private Double money;
+    private double money;
 
     public PaymentAccount() {
         super();
         money = 0.0;
     }
 
-    public PaymentAccount(Integer _id, User _user) {
-        super(_id, _user);
-        bank = null;
-        money = 0.0;
+    public PaymentAccount(int id, User user, Bank bank, double money) {
+        super(id, user, bank);
+        this.money = money;
+    }
+
+    public PaymentAccount(PaymentAccount paymentAccount) {
+        super(paymentAccount.getId(), paymentAccount.getUser(), paymentAccount.getBank());
+        this.money = paymentAccount.getMoney();
     }
 
     @Override
@@ -22,15 +26,11 @@ public class PaymentAccount extends Account {
                 "Количество денег: " + String.format("%.4f", money) + "\n";
     }
 
-    public void setMoney(Double _money) {
-        if (_money >= 0) {
-            money = _money;
-        } else {
-            System.out.println("Ошибка! Кол-во денег не может быть отрицательным числом!");
-        }
+    public void setMoney(double money) {
+        this.money = money;
     }
 
-    public Double getMoney() {
+    public double getMoney() {
         return money;
     }
 }

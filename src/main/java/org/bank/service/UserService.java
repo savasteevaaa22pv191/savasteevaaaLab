@@ -3,10 +3,14 @@ package org.bank.service;
 import org.bank.entity.User;
 
 public interface UserService {
+
+    // Создание пользователя
+    User create(User user);
+
     /*
     Регистрация места работы. При этом подсчитывается кредитный рейтинг пользователя.
      */
-    void jobRegistration(User user, String addressJob, Double monthIncome);
+    void jobRegistration(User user, String addressJob, double monthIncome);
 
     /*
     Подсчет кредитного рейтинга пользователя (генерируется рандомно

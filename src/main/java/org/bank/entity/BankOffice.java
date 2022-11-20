@@ -1,18 +1,18 @@
 package org.bank.entity;
 
 public class BankOffice {
-    private Integer id;
+    private int id;
     private String name;
     private String address;
     private Bank bank;
-    private Boolean isWorking;
-    private Boolean isInstallAtm;
-    private Integer countAtm;
-    private Boolean isGiveCredit;
-    private Boolean isGiveMoney;
-    private Boolean isPayInMoney;
-    private Double money;
-    private Double rentPrice;
+    private boolean isWorking;
+    private boolean isInstallAtm;
+    private int countAtm;
+    private boolean isGiveCredit;
+    private boolean isGiveMoney;
+    private boolean isPayInMoney;
+    private double money;
+    private double rentPrice;
 
     public BankOffice() {
         id = -1;
@@ -29,25 +29,42 @@ public class BankOffice {
         rentPrice = 0.0;
     }
 
-    public BankOffice(Integer _id, String _name, String _address, Bank _bank) {
-        id = _id;
-        name = _name;
-        address = _address;
-        bank = _bank;
-        isWorking = false;
-        isInstallAtm = false;
-        countAtm = 0;
-        isGiveCredit = false;
-        isGiveMoney = false;
-        isPayInMoney = false;
-        money = 0.0;
-        rentPrice = 0.0;
+    public BankOffice(int id, String name, String address, Bank bank, boolean isWorking, boolean isInstallAtm,
+                      boolean isGiveCredit, boolean isGiveMoney, boolean isPayInMoney, double money,
+                      double rentPrice) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.bank = bank;
+        this.isWorking = isWorking;
+        this.isInstallAtm = isInstallAtm;
+        this.countAtm = 0;
+        this.isGiveCredit = isGiveCredit;
+        this.isGiveMoney = isGiveMoney;
+        this.isPayInMoney = isPayInMoney;
+        this.money = money;
+        this.rentPrice = rentPrice;
+    }
+
+    public BankOffice(BankOffice bankOffice) {
+        this.id = bankOffice.getId();
+        this.name = bankOffice.getName();
+        this.address = bankOffice.getAddress();
+        this.bank = bankOffice.getBank();
+        this.isWorking = bankOffice.getIsWorking();
+        this.isInstallAtm = bankOffice.getIsInstallAtm();
+        this.countAtm = bankOffice.getCountAtm();
+        this.isGiveCredit = bankOffice.getIsGiveCredit();
+        this.isGiveMoney = bankOffice.getIsGiveMoney();
+        this.money = bankOffice.getMoney();
+        this.rentPrice = bankOffice.getRentPrice();
+        this.isPayInMoney = bankOffice.getIsPayInMoney();
     }
 
     @Override
     public String toString() {
         return "ID офиса: " + id + "\n" +
-                "Банковский офис " + name + "\n" +
+                "Банковский офис: " + name + "\n" +
                 "Банк: " + (bank != null ? bank.getName() : "") + " \n" +
                 "Адрес: " + address + "\n" +
                 "Работает: " + (isWorking ? "да" : "нет") + "\n" +
@@ -60,115 +77,99 @@ public class BankOffice {
                 "Стоимость аренды: " + String.format("%.4f", rentPrice) + "\n";
     }
 
-    public void setId(Integer _id) {
-        if (_id >= 0) {
-            id = _id;
-        } else {
-            System.out.println("Ошибка! ID не может быть отрицательным числом!");
-        }
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setName(String _name) {
-        name = _name;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setAddress(String _address) {
-        address = _address;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setBank(Bank _bank) {
-        bank = _bank;
+    public void setBank(Bank bank) {
+        this.bank = bank;
     }
 
     public Bank getBank() {
         return bank;
     }
 
-    public void setIsWorking(Boolean flag) {
-        isWorking = flag;
+    public void setIsWorking(boolean isWorking) {
+        this.isWorking = isWorking;
     }
 
-    public Boolean getIsWorking() {
+    public boolean getIsWorking() {
         return isWorking;
     }
 
-    public void setIsInstallAtm(Boolean flag) {
-        isInstallAtm = flag;
+    public void setIsInstallAtm(boolean isInstallAtm) {
+        this.isInstallAtm = isInstallAtm;
     }
 
-    public Boolean getIsInstallAtm() {
+    public boolean getIsInstallAtm() {
         return isInstallAtm;
     }
 
-    public void setCountAtm(Integer count) {
-        if (count >= 0) {
-            countAtm = count;
-        } else {
-            System.out.println("Ошибка! Кол-во банкоматов не может быть отрицательным числом!");
-        }
+    public void setCountAtm(int count) {
+        this.countAtm = count;
     }
 
-    public Integer getCountAtm() {
+    public int getCountAtm() {
         return countAtm;
     }
 
-    public void setIsCredit(Boolean flag) {
-        isGiveCredit = flag;
+    public void setIsGiveCredit(boolean isGiveCredit) {
+        this.isGiveCredit = isGiveCredit;
     }
 
-    public Boolean getIsCredit() {
+    public boolean getIsGiveCredit() {
         return isGiveCredit;
     }
 
-    public void setIsGiveMoney(Boolean flag) {
-        isGiveMoney = flag;
+    public void setIsGiveMoney(boolean isGiveMoney) {
+        this.isGiveMoney = isGiveMoney;
     }
 
-    public Boolean getIsGiveMoney() {
+    public boolean getIsGiveMoney() {
         return isGiveMoney;
     }
 
-    public void setIsPayInMoney(Boolean flag) {
-        isPayInMoney = flag;
+    public void setIsPayInMoney(boolean isPayInMoney) {
+        this.isPayInMoney = isPayInMoney;
     }
 
-    public Boolean getIsPayInMoney() {
+    public boolean getIsPayInMoney() {
         return isPayInMoney;
     }
 
-    public void setMoney(Double _money) {
-        if (_money >= 0) {
-            money = _money;
-        } else {
-            System.out.println("Ошибка! Кол-во денег не может быть отрицательным числом!");
-        }
+    public void setMoney(double money) {
+        this.money = money;
     }
 
-    public Double getMoney() {
+    public double getMoney() {
         return money;
     }
 
-    public void setRentPrice(Double money) {
-        if (money >= 0) {
-            rentPrice = money;
-        } else {
-            System.out.println("Ошибка! Стоимость аренды не может быть отрицательным числом!");
-        }
+    public void setRentPrice(double money) {
+        this.rentPrice = money;
     }
 
-    public Double getRentPrice() {
+    public double getRentPrice() {
         return rentPrice;
     }
 }

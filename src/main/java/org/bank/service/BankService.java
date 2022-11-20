@@ -3,6 +3,9 @@ package org.bank.service;
 import org.bank.entity.*;
 
 public interface BankService {
+    // Создание банка
+    Bank create(Bank bank);
+
     /*
     Вычисление процентной ставки банка (зависит от общей суммы денег в банке: чем больше денег - тем меньше ставка).
      */
@@ -11,13 +14,13 @@ public interface BankService {
     /*
     Внести деньги sum в банк.
     */
-    void depositMoney(Bank bank, Double sum);
+    void depositMoney(Bank bank, double sum);
 
     /*
     Снять деньги sum из банка.
     В операции может быть отказано, если в банке недостаточно денег.
     */
-    void withdrawMoney(Bank bank, Double sum);
+    void withdrawMoney(Bank bank, double sum);
 
     /*
     Добавление клиента банка
@@ -27,7 +30,19 @@ public interface BankService {
     /*
     Удаление клиента банка по ID
      */
-    void removeClient(Bank bank, Integer id);
+    void removeClient(Bank bank, int id);
+
+    // Добавить работника
+    void addEmployee(Bank bank, Employee employee);
+
+    // Удалить работника
+    void removeEmployee(Bank bank, int id);
+
+    // Добавление офиса
+    void addOffice(Bank bank, BankOffice bankOffice);
+
+    // Удаление офиса
+    void removeOffice(Bank bank, BankOffice bankOffice);
 
     /*
     Одобрение заявки на кредит.
@@ -35,5 +50,5 @@ public interface BankService {
     зп клиента меньше, чем ежемесячная выплата по кредиту
     Если операция проходит успешно, в account автоматически заполняется поле dateEnd.
      */
-    void approvalCredit(Bank bank, CreditAccount account, Employee employee);
+    boolean approvalCredit(Bank bank, CreditAccount account, Employee employee);
 }

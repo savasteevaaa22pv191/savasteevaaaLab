@@ -3,17 +3,17 @@ package org.bank.entity;
 import org.bank.utils.Status;
 
 public class BankAtm {
-    private Integer id;
+    private int id;
     private String name;
     private String address;
     private Status status;
     private Bank bank;
     private BankOffice bankOffice;
     private Employee employee;
-    private Boolean isGiveMoney;
-    private Boolean isPayInMoney;
-    private Double money;
-    private Double servicePrice;
+    private boolean isGiveMoney;
+    private boolean isPayInMoney;
+    private double money;
+    private double servicePrice;
 
     public BankAtm() {
         id = -1;
@@ -29,19 +29,31 @@ public class BankAtm {
         servicePrice = 0.0;
     }
 
-    public BankAtm(Integer _id, String _name, Status _status, Bank _bank, BankOffice _bankOffice, Employee _employee,
-                   Boolean _isGiveMoney, Boolean _isPayInMoney) {
-        id = _id;
-        name = _name;
-        address = _bankOffice.getAddress();
-        status = _status;
-        bank = _bank;
-        bankOffice = _bankOffice;
-        employee = _employee;
-        isGiveMoney = _isGiveMoney;
-        isPayInMoney = _isPayInMoney;
-        money = 0.0;
-        servicePrice = 0.0;
+    public BankAtm(int id, String name, Status status, boolean isGiveMoney, boolean isPayInMoney, double money,
+                   double servicePrice, BankOffice bankOffice) {
+        this.id = id;
+        this.name = name;
+        this.address = "";
+        this.status = status;
+        this.isGiveMoney = isGiveMoney;
+        this.isPayInMoney = isPayInMoney;
+        this.money = money;
+        this.servicePrice = servicePrice;
+        this.bankOffice = bankOffice;
+    }
+
+    public BankAtm(BankAtm bankAtm) {
+        this.id = bankAtm.getId();
+        this.name = bankAtm.getName();
+        this.address = bankAtm.getAddress();
+        this.status = bankAtm.getStatus();
+        this.bank = bankAtm.getBank();
+        this.bankOffice = bankAtm.getBankOffice();
+        this.employee = bankAtm.getEmployee();
+        this.isGiveMoney = bankAtm.getIsGiveMoney();
+        this.isPayInMoney = bankAtm.getIsPayInMoney();
+        this.money = bankAtm.getMoney();
+        this.servicePrice = bankAtm.getServicePrice();
     }
 
     @Override
@@ -59,103 +71,91 @@ public class BankAtm {
                 "Стоимость обслуживания: " + String.format("%.4f", servicePrice) + "\n";
     }
 
-    public void setId(Integer _id) {
-        if (_id >= 0) {
-            id = _id;
-        } else {
-            System.out.println("Ошибка! ID не может быть отрицательным числом!");
-        }
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setName(String _name) {
-        name = _name;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setAddress(String _address) {
-        address = _address;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setStatus(Status _status) {
-        status = _status;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public void setBank(Bank _bank) {
-        bank = _bank;
+    public void setBank(Bank bank) {
+        this.bank = bank;
     }
 
     public Bank getBank() {
         return bank;
     }
 
-    public void setBankOffice(BankOffice _bankOffice) {
-        bankOffice = _bankOffice;
+    public void setBankOffice(BankOffice bankOffice) {
+        this.bankOffice = bankOffice;
     }
 
     public BankOffice getBankOffice() {
         return bankOffice;
     }
 
-    public void setEmployee(Employee _employee) {
-        employee = _employee;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public Employee getEmployee() {
         return employee;
     }
 
-    public void setIsGiveMoney(Boolean _isGiveMoney) {
-        isGiveMoney = _isGiveMoney;
+    public void setIsGiveMoney(boolean isGiveMoney) {
+        this.isGiveMoney = isGiveMoney;
     }
 
     public Boolean getIsGiveMoney() {
         return isGiveMoney;
     }
 
-    public void setIsPayInMoney(Boolean _isPayInMoney) {
-        isPayInMoney = _isPayInMoney;
+    public void setIsPayInMoney(boolean isPayInMoney) {
+        this.isPayInMoney = isPayInMoney;
     }
 
     public Boolean getIsPayInMoney() {
         return isPayInMoney;
     }
 
-    public void setMoney(Double _money) {
-        if (_money >= 0) {
-            money = _money;
-        } else {
-            System.out.println("Ошибка! Кол-во денег не может быть отрицательным числом!");
-        }
+    public void setMoney(double money) {
+        this.money = money;
     }
 
-    public Double getMoney() {
+    public double getMoney() {
         return money;
     }
 
-    public void setServicePrice(Double money) {
-        if (money >= 0) {
-            servicePrice = money;
-        } else {
-            System.out.println("Ошибка! Стоимость обслуживания не может быть отрицательным числом!");
-        }
+    public void setServicePrice(double money) {
+        this.servicePrice = money;
     }
 
-    public Double getServicePrice() {
+    public double getServicePrice() {
         return servicePrice;
     }
 }
