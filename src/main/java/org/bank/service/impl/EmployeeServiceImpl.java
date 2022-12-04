@@ -1,15 +1,27 @@
 package org.bank.service.impl;
 
-import org.bank.entity.Bank;
-import org.bank.entity.BankOffice;
-import org.bank.entity.Employee;
-import org.bank.service.BankService;
+import org.bank.entity.*;
+import org.bank.service.BankOfficeService;
 import org.bank.service.EmployeeService;
 
-import java.util.Objects;
+import java.util.*;
 
 public class EmployeeServiceImpl implements EmployeeService {
-    BankService bankService = new BankServiceImpl();
+    private static EmployeeServiceImpl INSTANCE;
+    private final Map<Integer, Employee> employees = new HashMap<>();
+
+    private EmployeeServiceImpl() {
+    }
+
+    public static EmployeeServiceImpl getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new EmployeeServiceImpl();
+        }
+
+        return INSTANCE;
+    }
+
+    private final BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
 
     @Override
     public Employee create(Employee employee) {
@@ -30,12 +42,74 @@ public class EmployeeServiceImpl implements EmployeeService {
                 return null;
             }
 
-            bankService.addEmployee(employee.getOffice().getBank(), employee);
-
-            return new Employee(employee);
+            return addEmployee(new Employee(employee));
         }
 
         return null;
+    }
+
+    @Override
+    public Employee addEmployee(Employee employee) {
+        if (employee != null) {
+
+            if (!employees.containsKey(employee.getId())) {
+                BankOffice bankOffice = employee.getOffice();
+                if (bankOffice != null) {
+                    if (bankOfficeService.addEmployee(bankOffice.getId(), employee)) {
+                        employees.put(employee.getId(), employee);
+                        return employees.get(employee.getId());
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Employee getEmployeeById(int employeeId) {
+        return employees.get(employeeId);
+    }
+
+    @Override
+    public Boolean deleteEmployeeById(int employeeId) {
+        Employee employee = employees.get(employeeId);
+        if (employee != null) {
+            if (bankOfficeService.deleteEmployee(employee.getOffice().getId(), employeeId)) {
+                return employees.remove(employeeId) != null;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<Employee> getAllEmployees() {
+        return new ArrayList<Employee>(employees.values());
+    }
+
+    @Override
+    public List<Employee> getAllEmployeeByIdBank(int bankId) {
+        List<Employee> employeeByBank = employees.values().stream().filter(
+                employee -> employee.getBank().getId() == bankId).toList();
+
+        return employeeByBank;
+    }
+
+    @Override
+    public List<Employee> getAllEmployeeByIdBankOffice(int bankOfficeId) {
+        List<Employee> employeeByBankOffice = employees.values().stream().filter(
+                employee -> employee.getOffice().getId() == bankOfficeId).toList();
+
+        return employeeByBankOffice;
+    }
+
+    @Override
+    public String read(int employeeId) {
+        Employee employee = employees.get(employeeId);
+        if (employee != null) {
+            return employee.toString();
+        }
+        return "";
     }
 
     @Override

@@ -7,85 +7,202 @@ import org.bank.service.AtmService;
 import org.bank.service.BankOfficeService;
 import org.bank.utils.Status;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class AtmServiceImpl implements AtmService {
 
-    @Override
-    public BankAtm create(BankAtm bankAtm) {
-        if (bankAtm != null) {
+	private static AtmServiceImpl INSTANCE;
+	private final Map<Integer, BankAtm> bankAtms = new HashMap<>();
 
-            if (bankAtm.getId() < 0) {
-                System.out.println("Ошибка! ID не может быть отрицательным числом!");
-                return null;
-            }
+	private AtmServiceImpl() {
+	}
 
-            if (bankAtm.getMoney() < 0) {
-                System.out.println("Ошибка! Кол-во денег не может быть отрицательным числом!");
-                return null;
-            }
+	public static AtmServiceImpl getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new AtmServiceImpl();
+		}
 
-            if (bankAtm.getServicePrice() < 0) {
-                System.out.println("Ошибка! Стоимость обслуживания не может быть отрицательным числом!");
-                return null;
-            }
+		return INSTANCE;
+	}
 
-            if (bankAtm.getBankOffice() == null) {
-                System.out.println("Ошибка! Нельзя создать банкомат без офиса!");
-                return null;
-            }
+	//private final BankService bankService = BankServiceImpl.getInstance();
+	private final BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
 
-            BankOfficeService bankOfficeService = new BankOfficeServiceImpl();
-            if (bankOfficeService.installAtm(bankAtm.getBankOffice(), bankAtm)) {
-                return new BankAtm(bankAtm);
-            }
-        }
+	@Override
+	public BankAtm create(BankAtm bankAtm) {
+		if (bankAtm != null) {
 
-        return null;
-    }
+			if (bankAtm.getId() < 0) {
+				System.out.println("Ошибка! ID не может быть отрицательным числом!");
+				return null;
+			}
 
-    @Override
-    public void depositMoney(BankAtm bankAtm, double sum) {
-        if ((bankAtm != null) && (bankAtm.getBankOffice() != null) && (bankAtm.getBank() != null)) {
+			if (bankAtm.getMoney() < 0) {
+				System.out.println("Ошибка! Кол-во денег не может быть отрицательным числом!");
+				return null;
+			}
 
-            if (bankAtm.getStatus() != Status.NOT_WORK) {
-                if (bankAtm.getIsPayInMoney()) {
-                    BankOffice office = bankAtm.getBankOffice();
-                    Bank bank = bankAtm.getBank();
-                    double newSum = bankAtm.getMoney() + sum;
+			if (bankAtm.getServicePrice() < 0) {
+				System.out.println("Ошибка! Стоимость обслуживания не может быть отрицательным числом!");
+				return null;
+			}
 
-                    bankAtm.setMoney(newSum);
-                    office.setMoney(office.getMoney() + newSum);
-                    bank.setMoney(bank.getMoney() + newSum);
-                } else {
-                    System.out.println("В банкомат " + bankAtm.getName() + " нельзя вносить деньги\n");
-                }
-            } else {
-                System.out.println("Банкомат " + bankAtm.getName() + " не работает\n");
-            }
-        }
-    }
+			if (bankAtm.getBankOffice() == null) {
+				System.out.println("Ошибка! Нельзя создать банкомат без офиса!");
+				return null;
+			}
 
-    @Override
-    public void withdrawMoney(BankAtm bankAtm, double sum) {
-        if ((bankAtm != null) && (bankAtm.getBankOffice() != null) && (bankAtm.getBank() != null)) {
+			return addBankAtm(new BankAtm(bankAtm));
+		}
 
-            if (bankAtm.getStatus() == Status.WORK) {
-                if (bankAtm.getIsGiveMoney()) {
-                    if (bankAtm.getMoney() >= sum) {
+		return null;
+	}
 
-                        BankOffice office = bankAtm.getBankOffice();
-                        Bank bank = bankAtm.getBank();
-                        double newSum = bankAtm.getMoney() - sum;
+	@Override
+	public BankAtm addBankAtm(BankAtm bankAtm) {
+		if (bankAtm != null) {
 
-                        bankAtm.setMoney(newSum);
-                        office.setMoney(office.getMoney() + newSum);
-                        bank.setMoney(bank.getMoney() + newSum);
-                    } else {
-                        System.out.println("В банкомате" + bankAtm.getName() + " недостаточно денег для выдачи\n");
-                    }
-                } else {
-                    System.out.println("Банкомат " + bankAtm.getName() + " не работает на выдачу денег\n");
-                }
-            }
-        }
-    }
+			if (!bankAtms.containsKey(bankAtm.getId())) {
+				BankOffice bankOffice = bankAtm.getBankOffice();
+
+				if (bankOffice != null) {
+					if (bankOfficeService.addAtm(bankOffice.getId(), bankAtm)) {
+						bankAtms.put(bankAtm.getId(), bankAtm);
+						return bankAtms.get(bankAtm.getId());
+					}
+				} else {
+					System.out.println("Нельзя добавить офис с пустым банком");
+				}
+			} else {
+				System.out.println("Нельзя добавить офис: офис с таким id уже существует");
+			}
+		} else {
+			System.out.println("Нельзя добавить офис: офис не может быть null");
+		}
+
+		return null;
+	}
+
+	@Override
+	public BankAtm getBankAtmById(int id) {
+		BankAtm bankAtm = bankAtms.get(id);
+
+		if (bankAtm == null) {
+			System.out.println("Банкомат с id = " + id + " не существует");
+		}
+
+		return bankAtm;
+	}
+
+	@Override
+	public List<BankAtm> getAllBankAtm() {
+		return new ArrayList<BankAtm>(bankAtms.values());
+	}
+
+	@Override
+	public List<BankAtm> getAllBankAtmByIdBankOffice(int id) {
+		List<BankAtm> bankAtmByOfficeId = bankAtms.values().stream().filter(
+				atm -> atm.getBankOffice().getId() == id).toList();
+
+		return bankAtmByOfficeId;
+	}
+
+	@Override
+	public Boolean deleteBankAtm(int bankAtmId) {
+		BankAtm bankAtm = bankAtms.get(bankAtmId);
+		if (bankAtm != null) {
+			if (bankOfficeService.deleteAtm(bankAtm.getBankOffice().getId(), bankAtmId)) {
+				return bankAtms.remove(bankAtmId) != null;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public String read(int bankAtmId) {
+		BankAtm bankAtm = getBankAtmById(bankAtmId);
+
+		if (bankAtm != null) {
+			String str = "ID банкомата: " + bankAtm.getId() + "\n" +
+					"Банкомат: " + bankAtm.getName() + " \n" +
+					"Адрес: " + bankAtm.getAddress() + "\n" +
+					"Статус: " + bankAtm.getStatus().getName() + "\n" +
+					"Банк: " + (bankAtm.getBank() != null ? bankAtm.getBank().getName() : "") + "\n" +
+					"Офис: " + (bankAtm.getBankOffice() != null ? bankAtm.getBankOffice().getName() : "") + "\n" +
+					"Работник: " + (bankAtm.getEmployee() != null ? bankAtm.getEmployee().getName() : "") + "\n" +
+					"Выдает деньги: " + (bankAtm.getIsGiveMoney()? "да" : "нет") + "\n" +
+					"Можно положить деньги: " + (bankAtm.getIsPayInMoney() ? "да" : "нет") + "\n" +
+					"Количество денег: " + String.format("%.4f", bankAtm.getMoney()) + "\n" +
+					"Стоимость обслуживания: " + String.format("%.4f", bankAtm.getServicePrice()) + "\n\n";
+			return str;
+		}
+		return "";
+	}
+
+	@Override
+	public void depositMoney(int bankAtmId, double sum) {
+		BankAtm bankAtm = getBankAtmById(bankAtmId);
+		if ((bankAtm != null) && (bankAtm.getBankOffice() != null) && (bankAtm.getBank() != null)) {
+
+			if (bankAtm.getStatus() != Status.NOT_WORK) {
+				if (bankAtm.getIsPayInMoney()) {
+					BankOffice office = bankAtm.getBankOffice();
+					Bank bank = bankAtm.getBank();
+					double newSum = bankAtm.getMoney() + sum;
+
+					bankAtm.setMoney(newSum);
+					office.setMoney(office.getMoney() + newSum);
+					bank.setMoney(bank.getMoney() + newSum);
+				} else {
+					System.out.println("В банкомат " + bankAtm.getName() + " нельзя вносить деньги\n");
+				}
+			} else {
+				System.out.println("Банкомат " + bankAtm.getName() + " не работает\n");
+			}
+		}
+	}
+
+	@Override
+	public void withdrawMoney(int bankAtmId, double sum) {
+		BankAtm bankAtm = getBankAtmById(bankAtmId);
+		if ((bankAtm != null) && (bankAtm.getBankOffice() != null) && (bankAtm.getBank() != null)) {
+
+			if (bankAtm.getStatus() == Status.WORK) {
+				if (bankAtm.getIsGiveMoney()) {
+					if (bankAtm.getMoney() >= sum) {
+
+						BankOffice office = bankAtm.getBankOffice();
+						Bank bank = bankAtm.getBank();
+						double newSum = bankAtm.getMoney() - sum;
+
+						bankAtm.setMoney(newSum);
+						office.setMoney(office.getMoney() + newSum);
+						bank.setMoney(bank.getMoney() + newSum);
+					} else {
+						System.out.println("В банкомате" + bankAtm.getName() + " недостаточно денег для выдачи\n");
+					}
+				} else {
+					System.out.println("Банкомат " + bankAtm.getName() + " не работает на выдачу денег\n");
+				}
+			}
+		}
+	}
+
+	@Override
+	public void updateBank(int id, Bank bank) {
+		BankAtm bankAtm = bankAtms.get(id);
+
+		if (bankAtm != null) {
+			if (bank != null) {
+				bankAtm.setBank(bank);
+			} else {
+				System.out.println("Невозможно обновить банк у банкомата: банк не может быть null\n");
+			}
+		} else {
+			System.out.println("Невозможно обновить банк у банкомата: банкомат не может быть null\n");
+		}
+	}
 }

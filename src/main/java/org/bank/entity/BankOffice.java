@@ -8,6 +8,8 @@ public class BankOffice {
     private boolean isWorking;
     private boolean isInstallAtm;
     private int countAtm;
+
+    private int countEmployee;
     private boolean isGiveCredit;
     private boolean isGiveMoney;
     private boolean isPayInMoney;
@@ -27,6 +29,7 @@ public class BankOffice {
         isPayInMoney = false;
         money = 0.0;
         rentPrice = 0.0;
+        countEmployee = 0;
     }
 
     public BankOffice(int id, String name, String address, Bank bank, boolean isWorking, boolean isInstallAtm,
@@ -39,6 +42,7 @@ public class BankOffice {
         this.isWorking = isWorking;
         this.isInstallAtm = isInstallAtm;
         this.countAtm = 0;
+        countEmployee = 0;
         this.isGiveCredit = isGiveCredit;
         this.isGiveMoney = isGiveMoney;
         this.isPayInMoney = isPayInMoney;
@@ -54,6 +58,7 @@ public class BankOffice {
         this.isWorking = bankOffice.getIsWorking();
         this.isInstallAtm = bankOffice.getIsInstallAtm();
         this.countAtm = bankOffice.getCountAtm();
+        this.countEmployee = bankOffice.getCountEmployee();
         this.isGiveCredit = bankOffice.getIsGiveCredit();
         this.isGiveMoney = bankOffice.getIsGiveMoney();
         this.money = bankOffice.getMoney();
@@ -132,6 +137,12 @@ public class BankOffice {
     public int getCountAtm() {
         return countAtm;
     }
+
+    public void setCountEmployee(int count) {
+        countEmployee = count;
+    }
+
+    public int getCountEmployee() {return countEmployee;}
 
     public void setIsGiveCredit(boolean isGiveCredit) {
         this.isGiveCredit = isGiveCredit;
