@@ -64,7 +64,7 @@ public class BankAtm {
                 "Статус: " + status.getName() + "\n" +
                 "Банк: " + (bank != null ? bank.getName() : "") + "\n" +
                 "Офис: " + (bankOffice != null ? bankOffice.getName() : "") + "\n" +
-                "Работник: " + (employee != null ? employee.getName() : "") + "\n" +
+                (employee != null ? "Работник: " + employee.getName() + "\n" : "") +
                 "Выдает деньги: " + (isGiveMoney ? "да" : "нет") + "\n" +
                 "Можно положить деньги: " + (isPayInMoney ? "да" : "нет") + "\n" +
                 "Количество денег: " + String.format("%.4f", money) + "\n" +

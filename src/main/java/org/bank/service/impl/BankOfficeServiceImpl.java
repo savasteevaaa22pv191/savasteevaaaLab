@@ -154,18 +154,22 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 					"Выдает деньги: " + (bankOffice.getIsGiveMoney() ? "да" : "нет") + "\n" +
 					"Можно вносить деньги: " + (bankOffice.getIsPayInMoney() ? "да" : "нет") + "\n" +
 					"Кол-во денег: " + String.format("%.4f", bankOffice.getMoney()) + "\n" +
-					"Стоимость аренды: " + String.format("%.4f", bankOffice.getRentPrice()) + "\n\n");
+					"Стоимость аренды: " + String.format("%.4f", bankOffice.getRentPrice()) + "\n");
 
 			str.append((bankOffice.getCountAtm() > 0) ? "Информация о банкоматах :\n" : "");
 			List<BankAtm> bankAtms = atmService.getAllBankAtmByIdBankOffice(bankOffice.getId());
 			for (BankAtm bankAtm:  bankAtms) {
+				str.append("..............................................................\n");
 				str.append(atmService.read(bankAtm.getId()));
+				str.append("..............................................................\n");
 			}
 
 			str.append((bankOffice.getCountEmployee() > 0) ? "Информация о работниках:\n" : "");
 			List<Employee> employees = employeeService.getAllEmployeeByIdBankOffice(bankOfficeId);
 			for (Employee employee: employees) {
+				str.append("..............................................................\n");
 				str.append(employeeService.read(employee.getId()));
+				str.append("..............................................................\n");
 			}
 			return str.toString();
 		}
@@ -182,6 +186,7 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 				bankOffice.setCountAtm(bankOffice.getCountAtm() + 1);
 				bankOffice.getBank().setCountAtm(bankOffice.getBank().getCountAtm() + 1);
 				bankAtm.setBankOffice(bankOffice);
+				bankAtm.setBank(bankOffice.getBank());
 				bankAtm.setAddress(bankOffice.getAddress());
 				depositMoney(bankOfficeId, bankAtm.getMoney());
 				return true;
@@ -252,7 +257,10 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 		if ((employee != null) && (bankOffice != null)) {
 			employee.setOffice(bankOffice);
 			employee.setBank(bankOffice.getBank());
-			return bankService.addEmployee(employee.getBank().getId(), employee);
+			if (bankService.addEmployee(employee.getBank().getId(), employee)) {
+				bankOffice.setCountEmployee(bankOffice.getCountEmployee() + 1);
+				return true;
+			}
 		}
 		return false;
 	}

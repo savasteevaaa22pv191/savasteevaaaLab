@@ -117,13 +117,17 @@ public class BankServiceImpl implements BankService {
 			str.append((bank.getCountOffice() > 0) ? "Информация о офисах:\n" : "");
 			List<BankOffice> bankOffices = bankOfficeService.getAllBankOfficeByIdBank(bank.getId());
 			for (BankOffice bankOffice : bankOffices) {
+				str.append("-----------------------------------------------\n");
 				str.append(bankOfficeService.read(bankOffice.getId()));
+				str.append("-----------------------------------------------\n");
 			}
 
 			str.append((bank.getCountClient() > 0) ? "Информация о клиентах:\n" : "");
 			List<User> users = userService.getAllUserByIdBank(bankId);
 			for (User user: users) {
-				str.append(userService.read(user.getId()));
+				str.append("-----------------------------------------------\n");
+				str.append(user.toString());
+				str.append("-----------------------------------------------\n");
 			}
 
 			return str.toString();

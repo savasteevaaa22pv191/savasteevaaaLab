@@ -4,6 +4,7 @@ import org.bank.entity.*;
 import org.bank.service.BankService;
 import org.bank.service.UserService;
 
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -41,6 +42,8 @@ public class UserServiceImpl implements UserService {
                 System.out.println("Ошибка! Нельзя создать пользователя без банка");
                 return null;
             }
+
+            calculateRating(user);
 
             return addUser(new User(user));
         }
@@ -190,12 +193,16 @@ public class UserServiceImpl implements UserService {
 
             List<CreditAccount>creditAccounts = creditAccountService.getAllCreditAccountByIdUser(userId);
             for (CreditAccount creditAccount:  creditAccounts) {
+                str.append("..............................................................\n");
                 str.append(creditAccountService.read(creditAccount.getId()));
+                str.append("..............................................................\n");
             }
 
             List<PaymentAccount> paymentAccounts = paymentAccountService.getAllPaymentAccountByIdUser(userId);
             for (PaymentAccount paymentAccount: paymentAccounts) {
+                str.append("..............................................................\n");
                 str.append(paymentAccountService.read(paymentAccount.getId()));
+                str.append("..............................................................\n");
             }
 
             return str.toString();
@@ -214,8 +221,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void calculateRating(User user) {
-        int low = (int) user.getMonthIncome() / 10;
-        int high = low + 100;
-        user.setCreditRating(new Random().nextInt(high - low + 1) + low);
+        int rate = 100;
+        BigDecimal value = BigDecimal.valueOf(1000L);
+        while (BigDecimal.valueOf(user.getMonthIncome()).compareTo(value) > 0) {
+            rate += 100;
+            value = value.add(BigDecimal.valueOf(1000L));
+        }
+        user.setCreditRating(rate);
     }
 }

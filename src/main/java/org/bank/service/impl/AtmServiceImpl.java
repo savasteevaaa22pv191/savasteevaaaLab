@@ -28,7 +28,6 @@ public class AtmServiceImpl implements AtmService {
 		return INSTANCE;
 	}
 
-	//private final BankService bankService = BankServiceImpl.getInstance();
 	private final BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
 
 	@Override
@@ -126,18 +125,7 @@ public class AtmServiceImpl implements AtmService {
 		BankAtm bankAtm = getBankAtmById(bankAtmId);
 
 		if (bankAtm != null) {
-			String str = "ID банкомата: " + bankAtm.getId() + "\n" +
-					"Банкомат: " + bankAtm.getName() + " \n" +
-					"Адрес: " + bankAtm.getAddress() + "\n" +
-					"Статус: " + bankAtm.getStatus().getName() + "\n" +
-					"Банк: " + (bankAtm.getBank() != null ? bankAtm.getBank().getName() : "") + "\n" +
-					"Офис: " + (bankAtm.getBankOffice() != null ? bankAtm.getBankOffice().getName() : "") + "\n" +
-					"Работник: " + (bankAtm.getEmployee() != null ? bankAtm.getEmployee().getName() : "") + "\n" +
-					"Выдает деньги: " + (bankAtm.getIsGiveMoney()? "да" : "нет") + "\n" +
-					"Можно положить деньги: " + (bankAtm.getIsPayInMoney() ? "да" : "нет") + "\n" +
-					"Количество денег: " + String.format("%.4f", bankAtm.getMoney()) + "\n" +
-					"Стоимость обслуживания: " + String.format("%.4f", bankAtm.getServicePrice()) + "\n\n";
-			return str;
+			return bankAtm.toString();
 		}
 		return "";
 	}

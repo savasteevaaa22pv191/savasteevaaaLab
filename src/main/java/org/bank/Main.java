@@ -8,6 +8,7 @@ import org.bank.utils.Status;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Main {
 	public static void main(String[] args) {
@@ -153,9 +154,43 @@ public class Main {
 			id += 1;
 		}
 
+		// Опция вывода информации о банке
+		Scanner in = new Scanner(System.in);
 		List<Bank> banksList = bankService.getAllBanks();
-		for (Bank bank : banksList) {
-			System.out.println(bankService.read(bank.getId()));
+		StringBuilder bankOption = new StringBuilder("************************************\n");
+		bankOption.append("Введите id банка для вывода подробной информации\n");
+		bankOption.append("Введите -1 для выхода\n");
+		bankOption.append("ID существующих банков: ");
+		for (Bank bank: banksList) {
+			bankOption.append(bank.getId()).append("  ");
+		}
+		bankOption.append("\n************************************\n");
+		System.out.println(bankOption);
+
+		int inputValue = in.nextInt();
+		while (inputValue != -1) {
+			System.out.println(bankService.read(inputValue));
+			System.out.println(bankOption);
+			inputValue = in.nextInt();
+		}
+
+		// Опция вывода информации о счетах пользователя
+		List<User> usersList = userService.getAllUsers();
+		StringBuilder userOption = new StringBuilder("************************************\n");
+		userOption.append("Введите id пользователя для вывода подробной информации\n");
+		userOption.append("Введите -1 для выхода\n");
+		userOption.append("ID существующих пользователей: ");
+		for (User user: usersList) {
+			userOption.append(user.getId()).append("  ");
+		}
+		userOption.append("\n************************************\n");
+		System.out.println(userOption);
+
+		inputValue = in.nextInt();
+		while (inputValue != -1) {
+			System.out.println(userService.read(inputValue));
+			System.out.println(userOption);
+			inputValue = in.nextInt();
 		}
 	}
 }
