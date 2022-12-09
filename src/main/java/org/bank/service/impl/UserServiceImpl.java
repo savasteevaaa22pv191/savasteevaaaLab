@@ -228,5 +228,6 @@ public class UserServiceImpl implements UserService {
             value = value.add(BigDecimal.valueOf(1000L));
         }
         user.setCreditRating(rate);
+
     }
 }
