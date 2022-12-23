@@ -84,4 +84,10 @@ public interface BankOfficeService {
 	 * При этом уменьшается количество работников в соответствующем банке
 	 **/
 	Boolean deleteEmployee(int bankOfficeId, int id);
+
+	boolean isSuitableBankOffice(BankOffice bankOffice, double money);
+
+	List<BankAtm> getSuitableBankAtmInOffice(BankOffice bankOffice, double money);
+
+	List<Employee> getSuitableEmployeeInOffice(BankOffice bankOffice);
 }

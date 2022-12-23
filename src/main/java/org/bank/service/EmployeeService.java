@@ -54,4 +54,10 @@ public interface EmployeeService {
     При этом, если работника переводят в офис другого банка, количество работников соответствующих офисов меняется.
      **/
     void transferEmployee(Employee employee, BankOffice bankOffice);
+
+    /**
+     * Возвращает true, если работник подходит для выдачи кредита
+     */
+
+    boolean isEmployeeSuitable(Employee employee);
 }

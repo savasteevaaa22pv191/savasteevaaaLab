@@ -75,4 +75,6 @@ public interface UserService {
     исходя из ежемесячного дохода, от меньше 1 000 – 100, от 1 000 до 2 000 – 200 и т.д. вплоть до 10 000 )
      **/
     void calculateRating(User user);
+
+    PaymentAccount getBestPaymentAccountByUserID(int userId);
 }

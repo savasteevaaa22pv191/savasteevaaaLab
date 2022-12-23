@@ -60,4 +60,10 @@ public interface AtmService {
 	void withdrawMoney(int bankAtmId, double sum);
 
 	void updateBank(int id, Bank bank);
+
+	/**
+	 * Возвращает true, если банкомат подходит для выдачи денег на кредит
+	 */
+
+	boolean isAtmSuitable(BankAtm bankAtm, double money);
 }

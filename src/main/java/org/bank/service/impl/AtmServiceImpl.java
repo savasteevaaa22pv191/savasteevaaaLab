@@ -193,4 +193,9 @@ public class AtmServiceImpl implements AtmService {
 			System.out.println("Невозможно обновить банк у банкомата: банкомат не может быть null\n");
 		}
 	}
+
+	@Override
+	public boolean isAtmSuitable(BankAtm bankAtm, double money) {
+		return bankAtm.getMoney() >= money;
+	}
 }

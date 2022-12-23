@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class CreditAccount extends Account {
+    private BankOffice bankOffice;
+
     private LocalDate dateStart;
     private LocalDate dateEnd;
     private int countMonth;
@@ -28,9 +30,10 @@ public class CreditAccount extends Account {
         remainingSum = money;
     }
 
-    public CreditAccount(int id, User user, Bank bank, LocalDate dateStart, int countMonth, double money,
+    public CreditAccount(int id, User user, Bank bank, BankOffice bankOffice, LocalDate dateStart, int countMonth, double money,
                          Employee employee, PaymentAccount paymentAccount) {
         super(id, user, bank);
+        this.bankOffice = bankOffice;
         this.dateStart = dateStart;
         this.dateEnd = null;
         this.countMonth = countMonth;
@@ -44,6 +47,7 @@ public class CreditAccount extends Account {
 
     public CreditAccount(CreditAccount creditAccount) {
         super(creditAccount.getId(), creditAccount.getUser(), creditAccount.getBank());
+        this.bankOffice = creditAccount.getBankOffice();
         this.dateStart = creditAccount.getDateStart();
         this.dateEnd = creditAccount.getDateEnd();
         this.countMonth = creditAccount.getCountMonth();
@@ -70,6 +74,14 @@ public class CreditAccount extends Account {
                 "Процентная ставка: " + String.format("%.2f", interestRate) + "\n" +
                 "Работник: " + (employee != null ? employee.getName() : "") + "\n" +
                 "ID платежного аккаунта: " + (paymentAccount != null ? paymentAccount.getId() : "") + "\n";
+    }
+
+    public BankOffice getBankOffice() {
+        return bankOffice;
+    }
+
+    public void setBankOffice(BankOffice bankOffice) {
+        this.bankOffice = bankOffice;
     }
 
     public void setDateStart(LocalDate date) {

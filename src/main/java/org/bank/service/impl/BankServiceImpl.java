@@ -273,6 +273,9 @@ public class BankServiceImpl implements BankService {
 					double sumMonthPay = sum * (bank.getInterestRate() / 100 + 1) / account.getCountMonth();
 
 					if (account.getUser().getMonthIncome() >= sumMonthPay) {
+						if (account.getUser().getCreditRating() < 5000 && bank.getRating() > 50) {
+							return false;
+						}
 						account.setEmployee(employee);
 						account.setMonthPay(sumMonthPay);
 						account.setBank(bank);
@@ -298,5 +301,38 @@ public class BankServiceImpl implements BankService {
 		}
 
 		return false;
+	}
+
+	@Override
+	public List<Bank> getBanksSuitable(double sum, int countMonth) {
+		List<Bank> banksSuitable = new ArrayList<>();
+		for (Bank bank: banks.values()) {
+			if (isBankSuitable(bank, sum)) {
+				banksSuitable.add(bank);
+			}
+		}
+
+		return banksSuitable;
+	}
+
+	@Override
+	public boolean isBankSuitable(Bank bank, double money) {
+		List<BankOffice> bankOfficeSuitable = getBankOfficeSuitableInBank(bank, money);
+		return !bankOfficeSuitable.isEmpty();
+	}
+
+	@Override
+	public List<BankOffice> getBankOfficeSuitableInBank(Bank bank, double money) {
+		BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
+		List<BankOffice> bankOfficesByBank = bankOfficeService.getAllBankOfficeByIdBank(bank.getId());
+		List<BankOffice> suitableBankOffice = new ArrayList<>();
+
+		for (BankOffice bankOffice : bankOfficesByBank) {
+			if (bankOfficeService.isSuitableBankOffice(bankOffice, money)) {
+				suitableBankOffice.add(bankOffice);
+			}
+		}
+
+		return suitableBankOffice;
 	}
 }

@@ -7,6 +7,7 @@ import org.bank.entity.Employee;
 import org.bank.service.AtmService;
 import org.bank.service.BankOfficeService;
 import org.bank.service.BankService;
+import org.bank.service.EmployeeService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,8 +109,8 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 
 			// Удаляем все банкоматы офиса
 			List<BankAtm> bankAtms = atmService.getAllBankAtmByIdBankOffice(bankOfficeId);
-			for (BankAtm bankAtm: bankAtms) {
-				if (!deleteAtm(bankOfficeId, bankAtm.getId()))  {
+			for (BankAtm bankAtm : bankAtms) {
+				if (!deleteAtm(bankOfficeId, bankAtm.getId())) {
 					System.out.println("Не удалось удалить офис с id = " + bankOfficeId);
 					return false;
 				}
@@ -146,7 +147,7 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 					"Банковский офис: " + bankOffice.getName() + "\n" +
 					"Банк: " + (bankOffice.getBank() != null ? bankOffice.getBank().getName() : "") + " \n" +
 					"Адрес: " + bankOffice.getAddress() + "\n" +
-					"Работает: " + (bankOffice.getIsWorking()? "да" : "нет") + "\n" +
+					"Работает: " + (bankOffice.getIsWorking() ? "да" : "нет") + "\n" +
 					"Можно устанавливать банкоматы: " + (bankOffice.getIsInstallAtm() ? "да" : "нет") + "\n" +
 					"Кол-во банкоматов: " + bankOffice.getCountAtm() + "\n" +
 					"Кол-во работников: " + bankOffice.getCountEmployee() + "\n" +
@@ -158,7 +159,7 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 
 			str.append((bankOffice.getCountAtm() > 0) ? "Информация о банкоматах :\n" : "");
 			List<BankAtm> bankAtms = atmService.getAllBankAtmByIdBankOffice(bankOffice.getId());
-			for (BankAtm bankAtm:  bankAtms) {
+			for (BankAtm bankAtm : bankAtms) {
 				str.append("..............................................................\n");
 				str.append(atmService.read(bankAtm.getId()));
 				str.append("..............................................................\n");
@@ -166,7 +167,7 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 
 			str.append((bankOffice.getCountEmployee() > 0) ? "Информация о работниках:\n" : "");
 			List<Employee> employees = employeeService.getAllEmployeeByIdBankOffice(bankOfficeId);
-			for (Employee employee: employees) {
+			for (Employee employee : employees) {
 				str.append("..............................................................\n");
 				str.append(employeeService.read(employee.getId()));
 				str.append("..............................................................\n");
@@ -273,4 +274,54 @@ public class BankOfficeServiceImpl implements BankOfficeService {
 		}
 		return false;
 	}
+
+	@Override
+	public boolean isSuitableBankOffice(BankOffice bankOffice, double money) {
+		if (bankOffice.getIsWorking() && bankOffice.getIsGiveCredit() && bankOffice.getMoney() >= money) {
+			List<BankAtm> bankAtmSuitable = getSuitableBankAtmInOffice(bankOffice, money);
+			if (bankAtmSuitable.isEmpty()) {
+				return false;
+			}
+
+			List<Employee> employeesSuitable = getSuitableEmployeeInOffice(bankOffice);
+			if (employeesSuitable.isEmpty()) {
+				return false;
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public List<BankAtm> getSuitableBankAtmInOffice(BankOffice bankOffice, double money) {
+		AtmService atmService = AtmServiceImpl.getInstance();
+		List<BankAtm> bankAtmByOffice = atmService.getAllBankAtmByIdBankOffice(bankOffice.getId());
+		List<BankAtm> suitableBankAtm = new ArrayList<>();
+
+		for (BankAtm bankAtm : bankAtmByOffice) {
+			if (atmService.isAtmSuitable(bankAtm, money)) {
+				suitableBankAtm.add(bankAtm);
+			}
+		}
+
+		return suitableBankAtm;
+	}
+
+	@Override
+	public List<Employee> getSuitableEmployeeInOffice(BankOffice bankOffice) {
+		EmployeeService employeeService = EmployeeServiceImpl.getInstance();
+		List<Employee> employees = employeeService.getAllEmployeeByIdBankOffice(bankOffice.getId());
+		List<Employee> suitableEmployee = new ArrayList<>();
+
+		for (Employee employee: employees) {
+			if (employeeService.isEmployeeSuitable(employee)) {
+				suitableEmployee.add(employee);
+			}
+		}
+
+		return suitableEmployee;
+	}
+
+
 }

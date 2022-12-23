@@ -127,4 +127,16 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
     }
+
+    @Override
+    public boolean isEmployeeSuitable(Employee employee) {
+        return employee.getIsGiveCredit();
+    }
+
+    /*@Override
+    public List<Employee> getSuitableEmployee() {
+        List<Employee> employeesForGiveCredit = employees.values().stream().filter(
+                employee -> employee.getIsGiveCredit()).toList();
+        return employeesForGiveCredit;
+    }*/
 }

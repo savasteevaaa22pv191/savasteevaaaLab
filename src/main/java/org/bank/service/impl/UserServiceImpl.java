@@ -2,6 +2,7 @@ package org.bank.service.impl;
 
 import org.bank.entity.*;
 import org.bank.service.BankService;
+import org.bank.service.PaymentAccountService;
 import org.bank.service.UserService;
 
 import java.math.BigDecimal;
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
 
             List<PaymentAccount> paymentAccounts = paymentAccountService.getAllPaymentAccountByIdUser(userId);
             // Удаляем все платежные аккаунты
-            for (PaymentAccount paymentAccount: paymentAccounts) {
+            for (PaymentAccount paymentAccount : paymentAccounts) {
                 if (!paymentAccountService.deletePaymentAccountById(paymentAccount.getId())) {
                     System.out.println("Не удалось удалить пользователя из-за платежного аккаунта");
                     return false;
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
 
             List<CreditAccount> creditAccounts = creditAccountService.getAllCreditAccountByIdUser(userId);
             // Удаляем все кредитные аккаунты
-            for (CreditAccount creditAccount: creditAccounts) {
+            for (CreditAccount creditAccount : creditAccounts) {
                 if (!creditAccountService.deleteCreditAccountById(creditAccount.getId())) {
                     System.out.println("Не удалось удалить пользователя из-за кредитного аккаунта");
                     return false;
@@ -178,28 +179,28 @@ public class UserServiceImpl implements UserService {
         if (user != null) {
             StringBuilder str = new StringBuilder(
                     "ID пользователя: " + user.getId() + "\n" +
-                    "Имя пользователя: " + user.getName() + " \n" +
-                    "Дата рождения: " + user.getDateBirth().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + "\n" +
-                    "Работа: " + user.getAddressJob() + "\n" +
-                    "Ежемесячный доход: " + String.format("%.4f", user.getMonthIncome()) + "\n" +
-                    "Банк: " + (user.getBank() != null ? user.getBank().getName() : "") + "\n" +
-                    "Кол-во кредитных аккаунтов: " + user.getCountCreditAccount() + "\n" +
-                    "Кол-во платежных аккаунтов: " + user.getCountPaymentAccount() + "\n" +
-                    "Кредитный рейтинг: " + user.getCreditRating() + "\n");
+                            "Имя пользователя: " + user.getName() + " \n" +
+                            "Дата рождения: " + user.getDateBirth().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + "\n" +
+                            "Работа: " + user.getAddressJob() + "\n" +
+                            "Ежемесячный доход: " + String.format("%.4f", user.getMonthIncome()) + "\n" +
+                            "Банк: " + (user.getBank() != null ? user.getBank().getName() : "") + "\n" +
+                            "Кол-во кредитных аккаунтов: " + user.getCountCreditAccount() + "\n" +
+                            "Кол-во платежных аккаунтов: " + user.getCountPaymentAccount() + "\n" +
+                            "Кредитный рейтинг: " + user.getCreditRating() + "\n");
 
             str.append((user.getCountCreditAccount() > 0) ? "Информация о кредитных аккаунтах :\n" : "");
             CreditAccountServiceImpl creditAccountService = CreditAccountServiceImpl.getInstance();
             PaymentAccountServiceImpl paymentAccountService = PaymentAccountServiceImpl.getInstance();
 
-            List<CreditAccount>creditAccounts = creditAccountService.getAllCreditAccountByIdUser(userId);
-            for (CreditAccount creditAccount:  creditAccounts) {
+            List<CreditAccount> creditAccounts = creditAccountService.getAllCreditAccountByIdUser(userId);
+            for (CreditAccount creditAccount : creditAccounts) {
                 str.append("..............................................................\n");
                 str.append(creditAccountService.read(creditAccount.getId()));
                 str.append("..............................................................\n");
             }
 
             List<PaymentAccount> paymentAccounts = paymentAccountService.getAllPaymentAccountByIdUser(userId);
-            for (PaymentAccount paymentAccount: paymentAccounts) {
+            for (PaymentAccount paymentAccount : paymentAccounts) {
                 str.append("..............................................................\n");
                 str.append(paymentAccountService.read(paymentAccount.getId()));
                 str.append("..............................................................\n");
@@ -229,5 +230,16 @@ public class UserServiceImpl implements UserService {
         }
         user.setCreditRating(rate);
 
+    }
+
+    @Override
+    public PaymentAccount getBestPaymentAccountByUserID(int userId) {
+        PaymentAccountService paymentAccountService = PaymentAccountServiceImpl.getInstance();
+        List<PaymentAccount> paymentAccounts = paymentAccountService.getAllPaymentAccountByIdUser(userId);
+        PaymentAccount paymentAccount = paymentAccounts
+                .stream()
+                .min(Comparator.comparing(PaymentAccount::getMoney))
+                .orElseThrow(NoSuchElementException::new);
+        return paymentAccount;
     }
 }

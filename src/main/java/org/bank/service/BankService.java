@@ -95,4 +95,14 @@ public interface BankService {
 	 * Если операция проходит успешно, в account автоматически заполняется поле dateEnd.
 	 **/
 	boolean approvalCredit(Bank bank, CreditAccount account, Employee employee);
+
+	/**
+	 * Возвращает массив банков, подходящих под условия
+	 */
+
+	List<Bank> getBanksSuitable(double sum, int countMonth);
+
+	boolean isBankSuitable(Bank bank, double money);
+
+	List<BankOffice> getBankOfficeSuitableInBank(Bank bank, double money);
 }
