@@ -1,6 +1,9 @@
 package org.bank.service;
 
 import org.bank.entity.*;
+import org.bank.exception.NotEnoughMoneyException;
+import org.bank.exception.NotFoundException;
+import org.bank.exception.NotUniqueIdException;
 
 import java.util.List;
 
@@ -8,7 +11,7 @@ public interface BankOfficeService {
 	/**
 	 * Создание офиса банка
 	 **/
-	BankOffice create(BankOffice bankOffice);
+	BankOffice create(BankOffice bankOffice) throws NotFoundException, NotUniqueIdException;
 
 	/**
 	 * Добавление офиса банка в массив
@@ -16,13 +19,13 @@ public interface BankOfficeService {
 	 * Если bankOffice равен null или уже существует в массиве, возвращает null
 	 * Логика добавления офиса передается bankService
 	 **/
-	BankOffice addBankOffice(BankOffice bankOffice);
+	BankOffice addBankOffice(BankOffice bankOffice) throws NotFoundException, NotUniqueIdException;
 
 	/**
 	 * Получение офиса банка по id
 	 * Если объект не найден, возвращает null
 	 **/
-	public BankOffice getBankOfficeById(int bankOfficeId);
+	public BankOffice getBankOfficeById(int bankOfficeId) throws NotFoundException;
 
 	/**
 	 * Получение всех офисов
@@ -39,12 +42,12 @@ public interface BankOfficeService {
 	 * При удалении офиса удаляются все его банкоматы
 	 * Логика удаления офиса передается bankService
 	 **/
-	Boolean deleteBankOffice(int bankOfficeId);
+	Boolean deleteBankOffice(int bankOfficeId) throws NotFoundException, NotEnoughMoneyException;
 
 	/**
 	 * Вывод подробной информации о банковском офисе
 	 */
-	public String read(int bankOfficeId);
+	public String read(int bankOfficeId) throws NotFoundException;
 
 	/**
 	 * Установка банкомата в офисе.
@@ -52,38 +55,38 @@ public interface BankOfficeService {
 	 * При этом увеличивается количество банкоматов и денег в соответствующем банке.
 	 * В операции может быть отказано, если в офисе запрещена установка банкоматов.
 	 **/
-	boolean addAtm(int bankOfficeId, BankAtm bankAtm);
+	boolean addAtm(int bankOfficeId, BankAtm bankAtm) throws NotFoundException;
 
 	/**
 	 * Удаление банкомата из офиса.
 	 * При этом уменьшается количество банкоматов и денег в офисе
 	 * При этом уменьшается количество банкоматов и денег в соответствующем банке.
 	 **/
-	Boolean deleteAtm(int bankOfficeId, int idAtm);
+	Boolean deleteAtm(int bankOfficeId, int idAtm) throws NotFoundException, NotEnoughMoneyException;
 
 	/**
 	 * Внести деньги в офис. Также деньги вносятся в соответствующий банк.
 	 * В операции может быть отказано, если офис не работает на внос денег.
 	 **/
-	void depositMoney(int bankOfficeId, double sum);
+	void depositMoney(int bankOfficeId, double sum) throws NotFoundException;
 
 	/**
 	 * Снять деньги из офиса. Также деньги снимаются из соответствующего банка.
 	 * В операции может быть отказано, если офис не работает на выдачу денег или в нем недостаточно денег.
 	 **/
-	void withdrawMoney(int bankOfficeId, double sum);
+	void withdrawMoney(int bankOfficeId, double sum) throws NotFoundException, NotEnoughMoneyException;
 
 	/**
 	 * Добавление работника в офис
 	 * При этом увеличивается количество работников в соответствующем банке
 	 **/
-	Boolean addEmployee(int bankOfficeId, Employee employee);
+	Boolean addEmployee(int bankOfficeId, Employee employee) throws NotFoundException;
 
 	/**
 	 * Удаление работника из офиса по ID.
 	 * При этом уменьшается количество работников в соответствующем банке
 	 **/
-	Boolean deleteEmployee(int bankOfficeId, int id);
+	Boolean deleteEmployee(int bankOfficeId, int id) throws NotFoundException;
 
 	boolean isSuitableBankOffice(BankOffice bankOffice, double money);
 

@@ -3,6 +3,9 @@ package org.bank.service.impl;
 import org.bank.entity.Bank;
 import org.bank.entity.BankAtm;
 import org.bank.entity.BankOffice;
+import org.bank.exception.NotEnoughMoneyException;
+import org.bank.exception.NotFoundException;
+import org.bank.exception.NotUniqueIdException;
 import org.bank.service.AtmService;
 import org.bank.service.BankOfficeService;
 import org.bank.utils.Status;
@@ -31,7 +34,7 @@ public class AtmServiceImpl implements AtmService {
 	private final BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
 
 	@Override
-	public BankAtm create(BankAtm bankAtm) {
+	public BankAtm create(BankAtm bankAtm) throws NotFoundException, NotUniqueIdException {
 		if (bankAtm != null) {
 
 			if (bankAtm.getId() < 0) {
@@ -61,7 +64,7 @@ public class AtmServiceImpl implements AtmService {
 	}
 
 	@Override
-	public BankAtm addBankAtm(BankAtm bankAtm) {
+	public BankAtm addBankAtm(BankAtm bankAtm) throws NotFoundException, NotUniqueIdException {
 		if (bankAtm != null) {
 
 			if (!bankAtms.containsKey(bankAtm.getId())) {
@@ -76,7 +79,7 @@ public class AtmServiceImpl implements AtmService {
 					System.out.println("Нельзя добавить офис с пустым банком");
 				}
 			} else {
-				System.out.println("Нельзя добавить офис: офис с таким id уже существует");
+				throw new NotUniqueIdException(bankAtm.getId());
 			}
 		} else {
 			System.out.println("Нельзя добавить офис: офис не может быть null");
@@ -86,11 +89,11 @@ public class AtmServiceImpl implements AtmService {
 	}
 
 	@Override
-	public BankAtm getBankAtmById(int id) {
+	public BankAtm getBankAtmById(int id) throws NotFoundException {
 		BankAtm bankAtm = bankAtms.get(id);
 
 		if (bankAtm == null) {
-			System.out.println("Банкомат с id = " + id + " не существует");
+			throw new NotFoundException(id);
 		}
 
 		return bankAtm;
@@ -110,7 +113,7 @@ public class AtmServiceImpl implements AtmService {
 	}
 
 	@Override
-	public Boolean deleteBankAtm(int bankAtmId) {
+	public Boolean deleteBankAtm(int bankAtmId) throws NotFoundException, NotEnoughMoneyException {
 		BankAtm bankAtm = bankAtms.get(bankAtmId);
 		if (bankAtm != null) {
 			if (bankOfficeService.deleteAtm(bankAtm.getBankOffice().getId(), bankAtmId)) {
@@ -121,7 +124,7 @@ public class AtmServiceImpl implements AtmService {
 	}
 
 	@Override
-	public String read(int bankAtmId) {
+	public String read(int bankAtmId) throws NotFoundException {
 		BankAtm bankAtm = getBankAtmById(bankAtmId);
 
 		if (bankAtm != null) {
@@ -131,7 +134,7 @@ public class AtmServiceImpl implements AtmService {
 	}
 
 	@Override
-	public void depositMoney(int bankAtmId, double sum) {
+	public void depositMoney(int bankAtmId, double sum) throws NotFoundException {
 		BankAtm bankAtm = getBankAtmById(bankAtmId);
 		if ((bankAtm != null) && (bankAtm.getBankOffice() != null) && (bankAtm.getBank() != null)) {
 
@@ -154,7 +157,7 @@ public class AtmServiceImpl implements AtmService {
 	}
 
 	@Override
-	public void withdrawMoney(int bankAtmId, double sum) {
+	public void withdrawMoney(int bankAtmId, double sum) throws NotFoundException, NotEnoughMoneyException {
 		BankAtm bankAtm = getBankAtmById(bankAtmId);
 		if ((bankAtm != null) && (bankAtm.getBankOffice() != null) && (bankAtm.getBank() != null)) {
 
@@ -170,7 +173,7 @@ public class AtmServiceImpl implements AtmService {
 						office.setMoney(office.getMoney() + newSum);
 						bank.setMoney(bank.getMoney() + newSum);
 					} else {
-						System.out.println("В банкомате" + bankAtm.getName() + " недостаточно денег для выдачи\n");
+						throw new NotEnoughMoneyException();
 					}
 				} else {
 					System.out.println("Банкомат " + bankAtm.getName() + " не работает на выдачу денег\n");

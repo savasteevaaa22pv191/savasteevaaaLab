@@ -1,22 +1,23 @@
 package org.bank.service;
 
 import org.bank.entity.CreditAccount;
-import org.bank.entity.Employee;
 import org.bank.entity.PaymentAccount;
 import org.bank.entity.User;
+import org.bank.exception.NotFoundException;
+import org.bank.exception.NotUniqueIdException;
 
 import java.util.List;
 
 public interface UserService {
 
     // Создание пользователя
-    User create(User user);
+    User create(User user) throws NotFoundException, NotUniqueIdException;
 
     /**
      * Добавление пользователя
      *
      **/
-    User addUser(User user);
+    User addUser(User user) throws NotFoundException, NotUniqueIdException;
 
     /**
      * Получение пользователя по id
@@ -26,7 +27,7 @@ public interface UserService {
     /**
      * Удаление работника по id
      **/
-    boolean deleteUserById(int userId);
+    boolean deleteUserById(int userId) throws NotFoundException;
 
     /**
      * Получение всех работников

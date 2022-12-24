@@ -1,7 +1,10 @@
 package org.bank.service.impl;
 
 import org.bank.entity.*;
-import org.bank.service.AtmService;
+import org.bank.exception.NotEnoughMoneyException;
+import org.bank.exception.NotFoundException;
+import org.bank.exception.CreditException;
+import org.bank.exception.NotUniqueIdException;
 import org.bank.service.BankOfficeService;
 import org.bank.service.BankService;
 
@@ -26,7 +29,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public Bank create(Bank bank) {
+	public Bank create(Bank bank) throws NotUniqueIdException {
 		if (bank != null) {
 			if (bank.getId() < 0) {
 				System.out.println("Ошибка! ID не может быть отрицательным числом!");
@@ -45,13 +48,13 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public Bank addBank(Bank bank) {
+	public Bank addBank(Bank bank) throws NotUniqueIdException {
 		if (bank != null) {
 			if (!banks.containsKey(bank.getId())) {
 				banks.put(bank.getId(), bank);
 				return banks.get(bank.getId());
 			} else {
-				System.out.println("Нельзя добавить банк: банк с таким id уже существует");
+				throw new NotUniqueIdException(bank.getId());
 			}
 		} else {
 			System.out.println("Нельзя добавить банк: банк не может быть null");
@@ -61,24 +64,24 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public Bank getBankById(int bankId) {
+	public Bank getBankById(int bankId) throws NotFoundException {
 		Bank bank = banks.get(bankId);
 
 		if (bank == null) {
-			System.out.println("Банк с id = " + bankId + " не существует");
+			throw new NotFoundException(bankId);
 		}
 
 		return bank;
 	}
 
 	@Override
-	public Boolean deleteBankById(int bankId) {
+	public Boolean deleteBankById(int bankId) throws NotFoundException, NotEnoughMoneyException {
 		BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
 		if (banks.containsKey(bankId)) {
 
 			// Удаляем все офисы
 			List<BankOffice> bankOffices = bankOfficeService.getAllBankOfficeByIdBank(bankId);
-			for (BankOffice bankOffice: bankOffices) {
+			for (BankOffice bankOffice : bankOffices) {
 				if (!deleteOffice(bankId, bankOffice.getId())) {
 					System.out.println("Не удалось удалить банк с id = " + bankId);
 					return false;
@@ -95,7 +98,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public String read(int bankId) {
+	public String read(int bankId) throws NotFoundException {
 		BankOfficeServiceImpl bankOfficeService = BankOfficeServiceImpl.getInstance();
 		UserServiceImpl userService = UserServiceImpl.getInstance();
 		EmployeeServiceImpl employeeService = EmployeeServiceImpl.getInstance();
@@ -124,7 +127,7 @@ public class BankServiceImpl implements BankService {
 
 			str.append((bank.getCountClient() > 0) ? "Информация о клиентах:\n" : "");
 			List<User> users = userService.getAllUserByIdBank(bankId);
-			for (User user: users) {
+			for (User user : users) {
 				str.append("-----------------------------------------------\n");
 				str.append(user.toString());
 				str.append("-----------------------------------------------\n");
@@ -156,7 +159,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public void depositMoney(int bankId, double sum) {
+	public void depositMoney(int bankId, double sum) throws NotFoundException {
 		Bank bank = getBankById(bankId);
 		if (bank != null) {
 			bank.setMoney(bank.getMoney() + sum);
@@ -164,19 +167,19 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public void withdrawMoney(int bankId, double sum) {
+	public void withdrawMoney(int bankId, double sum) throws NotFoundException, NotEnoughMoneyException {
 		Bank bank = getBankById(bankId);
 		if (bank != null) {
 			if (bank.getMoney() >= sum) {
 				bank.setMoney(bank.getMoney() - sum);
 			} else {
-				System.out.println("В банке " + bank.getName() + " недостаточно денег для выдачи\n");
+				throw new NotEnoughMoneyException();
 			}
 		}
 	}
 
 	@Override
-	public Boolean addClient(int bankId, User user) {
+	public Boolean addClient(int bankId, User user) throws NotFoundException {
 		Bank bank = getBankById(bankId);
 		if ((bank != null) && (user != null)) {
 			user.setBank(bank);
@@ -188,7 +191,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public Boolean deleteClient(int bankId, int id) {
+	public Boolean deleteClient(int bankId, int id) throws NotFoundException {
 		Bank bank = getBankById(bankId);
 		if (bank != null) {
 			int countClient = bank.getCountClient();
@@ -203,7 +206,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public Boolean addEmployee(int bankId, Employee employee) {
+	public Boolean addEmployee(int bankId, Employee employee) throws NotFoundException {
 		Bank bank = getBankById(bankId);
 		if ((bank != null) && (employee != null)) {
 			employee.setBank(bank);
@@ -214,7 +217,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public Boolean deleteEmployee(int bankId, int id) {
+	public Boolean deleteEmployee(int bankId, int id) throws NotFoundException {
 		Bank bank = getBankById(bankId);
 		if (bank != null) {
 
@@ -230,7 +233,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public void addOffice(int bankId, BankOffice bankOffice) {
+	public void addOffice(int bankId, BankOffice bankOffice) throws NotFoundException {
 		Bank bank = getBankById(bankId);
 
 		if ((bank != null) && (bankOffice != null)) {
@@ -241,7 +244,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public Boolean deleteOffice(int bankId, int bankOfficeId) {
+	public Boolean deleteOffice(int bankId, int bankOfficeId) throws NotFoundException, NotEnoughMoneyException {
 		BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
 		Bank bank = getBankById(bankId);
 		BankOffice bankOffice = bankOfficeService.getBankOfficeById(bankOfficeId);
@@ -263,7 +266,7 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public boolean approvalCredit(Bank bank, CreditAccount account, Employee employee) {
+	public boolean approvalCredit(Bank bank, CreditAccount account, Employee employee) throws CreditException {
 		if ((account != null) && (bank != null) && (employee != null)) {
 
 			double sum = account.getMoney();
@@ -273,7 +276,7 @@ public class BankServiceImpl implements BankService {
 					double sumMonthPay = sum * (bank.getInterestRate() / 100 + 1) / account.getCountMonth();
 
 					if (account.getUser().getMonthIncome() >= sumMonthPay) {
-						if (account.getUser().getCreditRating() < 5000 && bank.getRating() > 50) {
+						if (account.getUser().getCreditRating() < 500 && bank.getRating() > 50) {
 							return false;
 						}
 						account.setEmployee(employee);
@@ -287,16 +290,9 @@ public class BankServiceImpl implements BankService {
 						account.setDateEnd(dateEnd);
 						return true;
 					} else {
-						System.out.println("Отказано в выдаче кредита! " +
-								account.getUser().getName() + " получает меньше ежемесячной выплаты за кредит\n");
+						throw new CreditException();
 					}
-				} else {
-					System.out.println("Отказано в выдаче кредита! " +
-							"Сотрудник " + employee.getName() + " не может оформлять кредиты\n");
 				}
-			} else {
-				System.out.println("Отказано в выдаче кредита! " +
-						"В банке " + bank.getName() + " недостаточно денег для выдачи кредита\n");
 			}
 		}
 
@@ -304,12 +300,16 @@ public class BankServiceImpl implements BankService {
 	}
 
 	@Override
-	public List<Bank> getBanksSuitable(double sum, int countMonth) {
+	public List<Bank> getBanksSuitable(double sum, int countMonth) throws CreditException {
 		List<Bank> banksSuitable = new ArrayList<>();
-		for (Bank bank: banks.values()) {
+		for (Bank bank : banks.values()) {
 			if (isBankSuitable(bank, sum)) {
 				banksSuitable.add(bank);
 			}
+		}
+
+		if (banksSuitable.isEmpty()) {
+			throw new CreditException();
 		}
 
 		return banksSuitable;

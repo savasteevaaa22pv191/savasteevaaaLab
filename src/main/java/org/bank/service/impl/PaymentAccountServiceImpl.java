@@ -1,6 +1,8 @@
 package org.bank.service.impl;
 
 import org.bank.entity.*;
+import org.bank.exception.NotEnoughMoneyException;
+import org.bank.exception.NotUniqueIdException;
 import org.bank.service.PaymentAccountService;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class PaymentAccountServiceImpl implements PaymentAccountService {
 
     UserServiceImpl userService = UserServiceImpl.getInstance();
     @Override
-    public PaymentAccount create(PaymentAccount paymentAccount) {
+    public PaymentAccount create(PaymentAccount paymentAccount) throws NotUniqueIdException {
         if (paymentAccount != null) {
 
             if (paymentAccount.getId() < 0) {
@@ -44,7 +46,7 @@ public class PaymentAccountServiceImpl implements PaymentAccountService {
     }
 
     @Override
-    public PaymentAccount addPaymentAccount(PaymentAccount paymentAccount) {
+    public PaymentAccount addPaymentAccount(PaymentAccount paymentAccount) throws NotUniqueIdException {
         if (paymentAccount != null) {
             if (!paymentAccounts.containsKey(paymentAccount.getId())) {
                 User user = paymentAccount.getUser();
@@ -54,6 +56,8 @@ public class PaymentAccountServiceImpl implements PaymentAccountService {
                         return paymentAccounts.get(paymentAccount.getId());
                     }
                 }
+            } else {
+                throw new NotUniqueIdException(paymentAccount.getId());
             }
         }
 
@@ -89,12 +93,12 @@ public class PaymentAccountServiceImpl implements PaymentAccountService {
     }
 
     @Override
-    public void withdrawMoney(PaymentAccount account, double sum) {
+    public void withdrawMoney(PaymentAccount account, double sum) throws NotEnoughMoneyException {
         if (account != null) {
             if (account.getMoney() >= sum) {
                 account.setMoney(account.getMoney() - sum);
             } else {
-                System.out.println("На аккаунте не достаточно денег для снятия\n");
+                throw new NotEnoughMoneyException();
             }
         }
     }

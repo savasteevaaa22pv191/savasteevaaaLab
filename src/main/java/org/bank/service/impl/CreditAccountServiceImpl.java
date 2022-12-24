@@ -1,6 +1,9 @@
 package org.bank.service.impl;
 
 import org.bank.entity.*;
+import org.bank.exception.CreditException;
+import org.bank.exception.NotFoundException;
+import org.bank.exception.NotUniqueIdException;
 import org.bank.service.BankService;
 import org.bank.service.CreditAccountService;
 import org.bank.service.UserService;
@@ -27,7 +30,7 @@ public class CreditAccountServiceImpl implements CreditAccountService {
     private final BankService bankService = BankServiceImpl.getInstance();
     private final UserService userService = UserServiceImpl.getInstance();
     @Override
-    public CreditAccount create(CreditAccount creditAccount) {
+    public CreditAccount create(CreditAccount creditAccount) throws CreditException, NotUniqueIdException {
         if (creditAccount != null) {
 
             if (creditAccount.getId() < 0) {
@@ -59,7 +62,7 @@ public class CreditAccountServiceImpl implements CreditAccountService {
     }
 
     @Override
-    public CreditAccount addCreditAccount(CreditAccount creditAccount) {
+    public CreditAccount addCreditAccount(CreditAccount creditAccount) throws NotUniqueIdException {
         if (creditAccount != null) {
             if (!creditAccounts.containsKey(creditAccount.getId())) {
                 if (userService.addCreditAccount(creditAccount.getUser().getId(), creditAccount)) {
@@ -67,7 +70,7 @@ public class CreditAccountServiceImpl implements CreditAccountService {
                     return creditAccounts.get(creditAccount.getId());
                 }
             } else {
-                System.out.println("Нельзя добавить кредитный аккаунт: кредитный аккаунт с таким id уже существует");
+                throw new NotUniqueIdException(creditAccount.getId());
             }
         } else {
             System.out.println("Нельзя добавить кредитный аккаунт: кредитный аккаунт не может быть null");
@@ -77,11 +80,11 @@ public class CreditAccountServiceImpl implements CreditAccountService {
     }
 
     @Override
-    public CreditAccount getCreditAccountById(int creditAccountId) {
+    public CreditAccount getCreditAccountById(int creditAccountId) throws NotFoundException {
         CreditAccount creditAccount = creditAccounts.get(creditAccountId);
 
         if (creditAccount == null) {
-            System.out.println("Кредитный аккаунт с id = " + creditAccountId + " не существует");
+            throw new NotFoundException(creditAccountId);
         }
 
         return creditAccount;

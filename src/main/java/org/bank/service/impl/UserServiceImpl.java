@@ -1,6 +1,8 @@
 package org.bank.service.impl;
 
 import org.bank.entity.*;
+import org.bank.exception.NotFoundException;
+import org.bank.exception.NotUniqueIdException;
 import org.bank.service.BankService;
 import org.bank.service.PaymentAccountService;
 import org.bank.service.UserService;
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService {
     private final BankService bankService = BankServiceImpl.getInstance();
 
     @Override
-    public User create(User user) {
+    public User create(User user) throws NotFoundException, NotUniqueIdException {
         if (user != null) {
             if (user.getId() < 0) {
                 System.out.println("Ошибка! ID не может быть отрицательным числом!");
@@ -53,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser(User user) {
+    public User addUser(User user) throws NotFoundException, NotUniqueIdException {
         if (user != null) {
 
             if (!users.containsKey(user.getId())) {
@@ -64,6 +66,8 @@ public class UserServiceImpl implements UserService {
                         return users.get(user.getId());
                     }
                 }
+            } else {
+                throw new NotUniqueIdException(user.getId());
             }
         }
 
@@ -76,7 +80,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deleteUserById(int userId) {
+    public boolean deleteUserById(int userId) throws NotFoundException {
         User user = users.get(userId);
         if (user != null) {
             PaymentAccountServiceImpl paymentAccountService = PaymentAccountServiceImpl.getInstance();

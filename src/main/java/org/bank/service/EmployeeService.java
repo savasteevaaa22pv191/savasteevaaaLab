@@ -2,19 +2,21 @@ package org.bank.service;
 
 import org.bank.entity.BankOffice;
 import org.bank.entity.Employee;
+import org.bank.exception.NotFoundException;
+import org.bank.exception.NotUniqueIdException;
 
 import java.util.List;
 
 public interface EmployeeService {
     /** Создание работника **/
-    Employee create(Employee employee);
+    Employee create(Employee employee) throws NotFoundException, NotUniqueIdException;
 
     /**
      * Добавление работника
      * Возвращает добавленный объект при успешном выполнении операции;
      * Если employee равен null или уже существует в массиве, возвращает null
      **/
-    public Employee addEmployee(Employee employee);
+    public Employee addEmployee(Employee employee) throws NotFoundException, NotUniqueIdException;
 
     /**
      * Получение работника по id
@@ -27,7 +29,7 @@ public interface EmployeeService {
      * Возвращает true при успешном выполнении операции, иначе false
      * При удалении банка удаляются все офисы банка
      **/
-    public Boolean deleteEmployeeById(int employeeId);
+    public Boolean deleteEmployeeById(int employeeId) throws NotFoundException;
 
     /**
      * Получение всех работников

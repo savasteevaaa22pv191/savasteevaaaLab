@@ -1,6 +1,8 @@
 package org.bank.service.impl;
 
 import org.bank.entity.*;
+import org.bank.exception.NotFoundException;
+import org.bank.exception.NotUniqueIdException;
 import org.bank.service.BankOfficeService;
 import org.bank.service.EmployeeService;
 
@@ -24,7 +26,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final BankOfficeService bankOfficeService = BankOfficeServiceImpl.getInstance();
 
     @Override
-    public Employee create(Employee employee) {
+    public Employee create(Employee employee) throws NotFoundException, NotUniqueIdException {
         if (employee != null) {
 
             if (employee.getId() < 0) {
@@ -49,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee addEmployee(Employee employee) {
+    public Employee addEmployee(Employee employee) throws NotFoundException, NotUniqueIdException {
         if (employee != null) {
 
             if (!employees.containsKey(employee.getId())) {
@@ -60,6 +62,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                         return employees.get(employee.getId());
                     }
                 }
+            } else {
+                throw new NotUniqueIdException(employee.getId());
             }
         }
 
@@ -72,7 +76,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Boolean deleteEmployeeById(int employeeId) {
+    public Boolean deleteEmployeeById(int employeeId) throws NotFoundException {
         Employee employee = employees.get(employeeId);
         if (employee != null) {
             if (bankOfficeService.deleteEmployee(employee.getOffice().getId(), employeeId)) {
@@ -132,11 +136,4 @@ public class EmployeeServiceImpl implements EmployeeService {
     public boolean isEmployeeSuitable(Employee employee) {
         return employee.getIsGiveCredit();
     }
-
-    /*@Override
-    public List<Employee> getSuitableEmployee() {
-        List<Employee> employeesForGiveCredit = employees.values().stream().filter(
-                employee -> employee.getIsGiveCredit()).toList();
-        return employeesForGiveCredit;
-    }*/
 }
