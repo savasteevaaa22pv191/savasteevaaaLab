@@ -1,12 +1,18 @@
 package org.bank.service.impl;
 
+import com.google.gson.Gson;
 import org.bank.entity.*;
+import org.bank.entity.json.JsonCreditAccount;
+import org.bank.entity.json.JsonPaymentAccount;
 import org.bank.exception.NotFoundException;
 import org.bank.exception.NotUniqueIdException;
 import org.bank.service.BankService;
 import org.bank.service.PaymentAccountService;
 import org.bank.service.UserService;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -245,5 +251,40 @@ public class UserServiceImpl implements UserService {
                 .min(Comparator.comparing(PaymentAccount::getMoney))
                 .orElseThrow(NoSuchElementException::new);
         return paymentAccount;
+    }
+
+    @Override
+    public void saveToFileByUserId(String fileName, int bankId, int userId) throws IOException {
+        Gson gson = new Gson();
+        String paymentAccountStr = gson.toJson(makeJsonPaymentAccByUserId(bankId, userId));
+        String creditAccountStr = gson.toJson(this.makeJsonCreditAccByUserId(bankId, userId));
+        File file = new File(fileName);
+        FileWriter writer = new FileWriter(file);
+        writer.write("Платёжные счета:\n" + paymentAccountStr + "\n\nКредитные счета:\n" + creditAccountStr);
+        writer.close();
+    }
+
+    // сериализация всех платежных аккаунтов банка bankID
+    private List<JsonPaymentAccount> makeJsonPaymentAccByUserId(int bankID, int UserId) {
+        List<JsonPaymentAccount> jsonPayment = new ArrayList<>();
+        var payAccounts = PaymentAccountServiceImpl.getInstance().getAllPaymentAccountByIdUser(UserId);
+        for (PaymentAccount paymentAccount : payAccounts) {
+            if (Objects.equals(paymentAccount.getBank().getId(), bankID)) {
+                jsonPayment.add(new JsonPaymentAccount(paymentAccount));
+            }
+        }
+        return jsonPayment;
+    }
+
+    // сериализация всех кредитных аккаунтов банка bankID
+    private List<JsonCreditAccount> makeJsonCreditAccByUserId(Integer bankID, int UserId) {
+        List<JsonCreditAccount> jsonCredit = new ArrayList<>();
+        var creditAccounts = CreditAccountServiceImpl.getInstance().getAllCreditAccountByIdUser(UserId);
+        for (CreditAccount creditAccount : creditAccounts) {
+            if (Objects.equals(creditAccount.getBank().getId(), bankID)) {
+                jsonCredit.add(new JsonCreditAccount(creditAccount));
+            }
+        }
+        return jsonCredit;
     }
 }

@@ -6,6 +6,7 @@ import org.bank.exception.NotFoundException;
 import org.bank.exception.NotUniqueIdException;
 import org.bank.service.impl.*;
 import org.bank.utils.Status;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
@@ -107,7 +108,7 @@ public class Main {
 			id = 1;
 			for (Bank bank : banks) {
 				userService.create(new User(
-						id, "Пользователь " + id + " банка " + bank.getName(),
+						id, "Пользователь " + id,
 						LocalDate.of(2004, random.nextInt(11) + 1,
 								random.nextInt(27) + 1), random.nextInt(3000) + 3000,
 						"адрес работы", bank));
@@ -115,7 +116,7 @@ public class Main {
 				id += 1;
 
 				userService.create(new User(
-						id, "Пользователь " + id + " банка " + bank.getName(),
+						id, "Пользователь " + id,
 						LocalDate.of(2004, random.nextInt(11) + 1,
 								random.nextInt(27) + 1), random.nextInt(3000) + 3000,
 						"адрес работы", bank));
@@ -124,13 +125,15 @@ public class Main {
 
 			List<User> users = userService.getAllUsers();
 
-			// Создание по 2 платежных аккаунта у каждого пользователя
+			// Создание по 2 платежных аккаунта у каждого пользователя в каждом банке
 			id = 1;
 			for (User user : users) {
-				paymentAccountService.create(new PaymentAccount(id, user, user.getBank(), random.nextInt(4000) + 2000));
-				id += 1;
-				paymentAccountService.create(new PaymentAccount(id, user, user.getBank(), random.nextInt(4000) + 2000));
-				id += 1;
+				for (Bank bank: banks) {
+					paymentAccountService.create(new PaymentAccount(id, user, bank, random.nextInt(4000) + 2000));
+					id += 1;
+					paymentAccountService.create(new PaymentAccount(id, user, bank, random.nextInt(4000) + 2000));
+					id += 1;
+				}
 			}
 
 		} catch (NotFoundException | NotUniqueIdException e) {
@@ -227,5 +230,34 @@ public class Main {
 		} catch (CreditException e) {
 			System.out.println(e.getMessage());
 		}
+
+		// Опция вывода информации о счетах пользователя
+		Scanner in = new Scanner(System.in);
+		List<User> usersList = userService.getAllUsers();
+		StringBuilder userOption = new StringBuilder("\n************************************\n");
+		userOption.append("Введите id пользователя для записи информации о его счетах в файл\n");
+		userOption.append("Введите -1 для выхода");
+		userOption.append("ID существующих пользователей: ");
+		for (User user : usersList) {
+			userOption.append(user.getId()).append("  ");
+		}
+
+		userOption.append("\n************************************\n");
+		System.out.println(userOption);
+		int inputValue = in.nextInt();
+		while (inputValue != -1) {
+			System.out.println(userService.read(inputValue));
+			System.out.println(userOption);
+			inputValue = in.nextInt();
+			System.out.println("Введите имя файла, в который необходимо записать счета : ");
+			String fileName = in.nextLine();
+			List<Bank> banks = bankService.getAllBanks();
+			StringBuilder bankOption = new StringBuilder("Введите банк, счета в котором надо записать в файл");
+			bankOption.append("ID существующих банков: ")
+		}
+
+
+
+		StringBuilder bankOption =
 	}
 }

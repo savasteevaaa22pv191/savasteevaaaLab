@@ -6,6 +6,7 @@ import org.bank.entity.User;
 import org.bank.exception.NotFoundException;
 import org.bank.exception.NotUniqueIdException;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -78,4 +79,6 @@ public interface UserService {
     void calculateRating(User user);
 
     PaymentAccount getBestPaymentAccountByUserID(int userId);
+
+    void saveToFileByUserId(String fileName, int bankId, int userId) throws IOException;
 }
