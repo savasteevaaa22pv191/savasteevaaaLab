@@ -7,13 +7,15 @@ import org.bank.exception.NotUniqueIdException;
 import org.bank.service.impl.*;
 import org.bank.utils.Status;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
-	public static void main(String[] args) throws NotUniqueIdException, NotFoundException {
+	public static void main(String[] args) throws NotUniqueIdException, NotFoundException, IOException {
 		BankServiceImpl bankService = BankServiceImpl.getInstance();
 		BankOfficeServiceImpl bankOfficeService = BankOfficeServiceImpl.getInstance();
 		AtmServiceImpl atmService = AtmServiceImpl.getInstance();
@@ -128,7 +130,7 @@ public class Main {
 			// Создание по 2 платежных аккаунта у каждого пользователя в каждом банке
 			id = 1;
 			for (User user : users) {
-				for (Bank bank: banks) {
+				for (Bank bank : banks) {
 					paymentAccountService.create(new PaymentAccount(id, user, bank, random.nextInt(4000) + 2000));
 					id += 1;
 					paymentAccountService.create(new PaymentAccount(id, user, bank, random.nextInt(4000) + 2000));
@@ -136,8 +138,24 @@ public class Main {
 				}
 			}
 
+			// Создание по 1 кредитных аккаунта у каждого пользователя в каждом банке
+			id = 1;
+			for (User user : users) {
+				List<PaymentAccount> paymentAccounts = paymentAccountService.getAllPaymentAccountByIdUser(user.getId());
+				for (BankOffice bankOffice : bankOffices) {
+					List<Employee> employees = employeeService.getAllEmployeeByIdBankOffice(bankOffice.getId());
+					creditAccountService.create(new CreditAccount(id, user, bankOffice.getBank(), bankOffice,
+							LocalDate.now(), 2, random.nextInt(1000) + 200,
+							employeeService.getEmployeeById(random.nextInt(employees.size() + 1)),
+							paymentAccountService.getPaymentAccountById(random.nextInt(paymentAccounts.size() + 1))));
+					id += 1;
+				}
+			}
+
 		} catch (NotFoundException | NotUniqueIdException e) {
 			System.out.println(e.getMessage());
+		} catch (CreditException e) {
+			throw new RuntimeException(e);
 		}
 
 		try {
@@ -231,12 +249,12 @@ public class Main {
 			System.out.println(e.getMessage());
 		}
 
-		// Опция вывода информации о счетах пользователя
+		// Опция записи в файл информации о счетах пользователя в выбранном банке
 		Scanner in = new Scanner(System.in);
 		List<User> usersList = userService.getAllUsers();
 		StringBuilder userOption = new StringBuilder("\n************************************\n");
 		userOption.append("Введите id пользователя для записи информации о его счетах в файл\n");
-		userOption.append("Введите -1 для выхода");
+		userOption.append("Введите -1 для выхода\n");
 		userOption.append("ID существующих пользователей: ");
 		for (User user : usersList) {
 			userOption.append(user.getId()).append("  ");
@@ -244,20 +262,49 @@ public class Main {
 
 		userOption.append("\n************************************\n");
 		System.out.println(userOption);
-		int inputValue = in.nextInt();
-		while (inputValue != -1) {
-			System.out.println(userService.read(inputValue));
-			System.out.println(userOption);
-			inputValue = in.nextInt();
+		int userId = in.nextInt();
+		while (userId != -1) {
 			System.out.println("Введите имя файла, в который необходимо записать счета : ");
 			String fileName = in.nextLine();
-			List<Bank> banks = bankService.getAllBanks();
-			StringBuilder bankOption = new StringBuilder("Введите банк, счета в котором надо записать в файл");
-			bankOption.append("ID существующих банков: ")
+			fileName = in.nextLine();
+			StringBuilder bankOption = new StringBuilder("Введите банк, счета в котором надо записать в файл\n");
+			bankOption.append("ID существующих банков: ");
+			List<Bank> banks = userService.getAllBanksByIdUser(userId);
+			for (Bank bank : banks) {
+				bankOption.append(bank.getId() + " ");
+			}
+			System.out.println(bankOption);
+			int bankId = in.nextInt();
+			userService.saveToFileByUserId(fileName, bankId, userId);
+
+			System.out.println(userOption);
+			userId = in.nextInt();
 		}
 
+		System.out.println("Введите имя файла из которого хотите перенести счет : ");
+		System.out.println("Для выхода введите -1 ");
+		in.nextLine();
+		var fileName = in.nextLine();
+		while (!Objects.equals(fileName, "-1")) {
+			System.out.println("Введите имя файла в который хотите перенести счет : ");
+			var fileNameNew = in.nextLine();
 
+			System.out.println("Введите id пользователя счета которого хотите перенести : ");
+			userId = in.nextInt();
 
-		StringBuilder bankOption =
+			System.out.println("Введите id банка в который хотите перенести счет : ");
+			var bankId = in.nextInt();
+			System.out.println("Введите номер платежного счета, который хотите перенести\nесли переносить платежный счет не нужно введите -1 : ");
+			var payAccId = in.nextInt();
+			System.out.println("Введите номер кредитного счета, который хотите перенести\n если переносить кредитный счет не нужно введите -1 : ");
+			var creditAccId = in.nextInt();
+			userService.transfer(fileName, bankId, creditAccId, payAccId);
+			userService.saveToFileByUserId(fileNameNew, bankId, userId);
+			System.out.println("********************************************************: ");
+			System.out.println("Введите -1 для выхода : ");
+			System.out.println("Введите имя файла из которого хотите перенести счет : ");
+			in.nextLine();
+			fileName = in.nextLine();
+		}
 	}
 }

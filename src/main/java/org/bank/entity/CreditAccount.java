@@ -1,5 +1,12 @@
 package org.bank.entity;
 
+import org.bank.entity.json.JsonCreditAccount;
+import org.bank.exception.NotFoundException;
+import org.bank.service.impl.BankServiceImpl;
+import org.bank.service.impl.EmployeeServiceImpl;
+import org.bank.service.impl.PaymentAccountServiceImpl;
+import org.bank.service.impl.UserServiceImpl;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -57,6 +64,20 @@ public class CreditAccount extends Account {
         this.paymentAccount = creditAccount.getPaymentAccount();
         this.interestRate = creditAccount.getInterestRate();
         this.remainingSum = creditAccount.getRemainingSum();
+    }
+
+    public CreditAccount(JsonCreditAccount jsonCreditAcc) throws NotFoundException {
+        this.id = (jsonCreditAcc.getId());
+        this.bank = BankServiceImpl.getInstance().getBankById(jsonCreditAcc.getBankID());
+        this.user = UserServiceImpl.getInstance().getUserById(jsonCreditAcc.getUserID());
+        this.paymentAccount = PaymentAccountServiceImpl.getInstance().getPaymentAccountById(jsonCreditAcc.getPayAccID());
+        this.employee = EmployeeServiceImpl.getInstance().getEmployeeById(jsonCreditAcc.getEmployeeID());
+        if(jsonCreditAcc.getStartDate() != null){this.dateStart = LocalDate.parse(jsonCreditAcc.getStartDate());}
+        if(jsonCreditAcc.getEndDate() != null){this.dateEnd = LocalDate.parse(jsonCreditAcc.getEndDate());}
+        this.countMonth = jsonCreditAcc.getCountMonth();
+        this.money = jsonCreditAcc.getMoney();
+        this.monthPay = jsonCreditAcc.getCountMonth();
+        this.interestRate = jsonCreditAcc.getInterestRate();
     }
 
     @Override

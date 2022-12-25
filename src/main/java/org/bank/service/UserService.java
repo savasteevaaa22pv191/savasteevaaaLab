@@ -1,11 +1,13 @@
 package org.bank.service;
 
+import org.bank.entity.Bank;
 import org.bank.entity.CreditAccount;
 import org.bank.entity.PaymentAccount;
 import org.bank.entity.User;
 import org.bank.exception.NotFoundException;
 import org.bank.exception.NotUniqueIdException;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -81,4 +83,8 @@ public interface UserService {
     PaymentAccount getBestPaymentAccountByUserID(int userId);
 
     void saveToFileByUserId(String fileName, int bankId, int userId) throws IOException;
+
+    void transfer(String fileName, int bankId, int paymentAccountId, int creditAccountId) throws IOException, NotUniqueIdException, NotFoundException;
+
+    List<Bank> getAllBanksByIdUser(int userId);
 }

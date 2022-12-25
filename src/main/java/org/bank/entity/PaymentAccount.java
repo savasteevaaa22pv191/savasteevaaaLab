@@ -1,5 +1,14 @@
 package org.bank.entity;
 
+import com.google.gson.reflect.TypeToken;
+import org.bank.entity.json.JsonPaymentAccount;
+import org.bank.exception.NotFoundException;
+import org.bank.service.impl.BankServiceImpl;
+import org.bank.service.impl.UserServiceImpl;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 public class PaymentAccount extends Account {
     private double money;
 
@@ -16,6 +25,13 @@ public class PaymentAccount extends Account {
     public PaymentAccount(PaymentAccount paymentAccount) {
         super(paymentAccount.getId(), paymentAccount.getUser(), paymentAccount.getBank());
         this.money = paymentAccount.getMoney();
+    }
+
+    public PaymentAccount(JsonPaymentAccount jsonPayAcc) throws NotFoundException {
+        this.id = jsonPayAcc.getId();
+        this.bank = BankServiceImpl.getInstance().getBankById(jsonPayAcc.getBankID());
+        this.user = UserServiceImpl.getInstance().getUserById(jsonPayAcc.getUserID());
+        this.money = jsonPayAcc.getMoney();
     }
 
     @Override

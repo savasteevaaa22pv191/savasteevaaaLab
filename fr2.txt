@@ -1,0 +1,5 @@
+Платёжные счета:
+[{"id":1,"bankID":3,"userID":1,"money":5642.0},{"id":5,"bankID":3,"userID":1,"money":5848.0},{"id":6,"bankID":3,"userID":1,"money":3690.0}]
+
+Кредитные счета:
+[{"id":1,"bankID":3,"userID":1,"dateStart":"2022-12-25","dateEnd":"2023-02-25","countMonth":2,"money":1152.0,"monthPay":2.0,"interestRate":9.191041261415185,"employeeId":5,"paymentAccountId":1},{"id":7,"bankID":3,"userID":1,"dateStart":"2022-12-25","dateEnd":"2023-02-25","countMonth":2,"money":1063.0,"monthPay":539.3957294111729,"interestRate":1.4855558628735288,"employeeId":4,"paymentAccountId":6},{"id":8,"bankID":3,"userID":1,"dateStart":"2022-12-25","dateEnd":"2023-02-25","countMonth":2,"money":669.0,"monthPay":339.469184361312,"interestRate":1.4855558628735288,"employeeId":1,"paymentAccountId":1},{"id":9,"bankID":3,"userID":1,"dateStart":"2022-12-25","dateEnd":"2023-02-25","countMonth":2,"money":1068.0,"monthPay":541.9328683077447,"interestRate":1.4855558628735288,"employeeId":4,"paymentAccountId":3}]
