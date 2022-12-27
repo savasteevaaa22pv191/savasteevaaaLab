@@ -158,9 +158,9 @@ public class Main {
 			throw new RuntimeException(e);
 		}
 
-		try {
+		try (Scanner in = new Scanner(System.in)) {
+
 			// Опция вывода информации о банке
-			Scanner in = new Scanner(System.in);
 			List<Bank> banksList = bankService.getAllBanks();
 			StringBuilder bankOption = new StringBuilder("************************************\n");
 			bankOption.append("Введите id банка для вывода подробной информации\n");
@@ -202,9 +202,8 @@ public class Main {
 		}
 
 		// Взятие кредита
-		try {
+		try (Scanner in = new Scanner(System.in)) {
 			List<User> usersList = userService.getAllUsers();
-			Scanner in = new Scanner(System.in);
 			StringBuilder creditOption = new StringBuilder("************************************\n");
 			creditOption.append("Введите id пользователя, от лица которого хотите взять кредит\n");
 			creditOption.append("Введите -1 для выхода\n");
@@ -250,61 +249,63 @@ public class Main {
 		}
 
 		// Опция записи в файл информации о счетах пользователя в выбранном банке
-		Scanner in = new Scanner(System.in);
-		List<User> usersList = userService.getAllUsers();
-		StringBuilder userOption = new StringBuilder("\n************************************\n");
-		userOption.append("Введите id пользователя для записи информации о его счетах в файл\n");
-		userOption.append("Введите -1 для выхода\n");
-		userOption.append("ID существующих пользователей: ");
-		for (User user : usersList) {
-			userOption.append(user.getId()).append("  ");
-		}
+		try (Scanner in = new Scanner(System.in)) {
 
-		userOption.append("\n************************************\n");
-		System.out.println(userOption);
-		int userId = in.nextInt();
-		while (userId != -1) {
-			System.out.println("Введите имя файла, в который необходимо записать счета : ");
-			String fileName = in.nextLine();
-			fileName = in.nextLine();
-			StringBuilder bankOption = new StringBuilder("Введите банк, счета в котором надо записать в файл\n");
-			bankOption.append("ID существующих банков: ");
-			List<Bank> banks = userService.getAllBanksByIdUser(userId);
-			for (Bank bank : banks) {
-				bankOption.append(bank.getId() + " ");
+			List<User> usersList = userService.getAllUsers();
+			StringBuilder userOption = new StringBuilder("\n************************************\n");
+			userOption.append("Введите id пользователя для записи информации о его счетах в файл\n");
+			userOption.append("Введите -1 для выхода\n");
+			userOption.append("ID существующих пользователей: ");
+			for (User user : usersList) {
+				userOption.append(user.getId()).append("  ");
 			}
-			System.out.println(bankOption);
-			int bankId = in.nextInt();
-			userService.saveToFileByUserId(fileName, bankId, userId);
 
+			userOption.append("\n************************************\n");
 			System.out.println(userOption);
-			userId = in.nextInt();
-		}
+			int userId = in.nextInt();
+			while (userId != -1) {
+				System.out.println("Введите имя файла, в который необходимо записать счета : ");
+				String fileName = in.nextLine();
+				fileName = in.nextLine();
+				StringBuilder bankOption = new StringBuilder("Введите банк, счета в котором надо записать в файл\n");
+				bankOption.append("ID существующих банков: ");
+				List<Bank> banks = userService.getAllBanksByIdUser(userId);
+				for (Bank bank : banks) {
+					bankOption.append(bank.getId() + " ");
+				}
+				System.out.println(bankOption);
+				int bankId = in.nextInt();
+				userService.saveToFileByUserId(fileName, bankId, userId);
 
-		System.out.println("Введите имя файла из которого хотите перенести счет : ");
-		System.out.println("Для выхода введите -1 ");
-		in.nextLine();
-		var fileName = in.nextLine();
-		while (!Objects.equals(fileName, "-1")) {
-			System.out.println("Введите имя файла в который хотите перенести счет : ");
-			var fileNameNew = in.nextLine();
+				System.out.println(userOption);
+				userId = in.nextInt();
+			}
 
-			System.out.println("Введите id пользователя счета которого хотите перенести : ");
-			userId = in.nextInt();
-
-			System.out.println("Введите id банка в который хотите перенести счет : ");
-			var bankId = in.nextInt();
-			System.out.println("Введите номер платежного счета, который хотите перенести\nесли переносить платежный счет не нужно введите -1 : ");
-			var payAccId = in.nextInt();
-			System.out.println("Введите номер кредитного счета, который хотите перенести\n если переносить кредитный счет не нужно введите -1 : ");
-			var creditAccId = in.nextInt();
-			userService.transfer(fileName, bankId, creditAccId, payAccId);
-			userService.saveToFileByUserId(fileNameNew, bankId, userId);
-			System.out.println("********************************************************: ");
-			System.out.println("Введите -1 для выхода : ");
 			System.out.println("Введите имя файла из которого хотите перенести счет : ");
+			System.out.println("Для выхода введите -1 ");
 			in.nextLine();
-			fileName = in.nextLine();
+			var fileName = in.nextLine();
+			while (!Objects.equals(fileName, "-1")) {
+				System.out.println("Введите имя файла в который хотите перенести счет : ");
+				var fileNameNew = in.nextLine();
+
+				System.out.println("Введите id пользователя счета которого хотите перенести : ");
+				userId = in.nextInt();
+
+				System.out.println("Введите id банка в который хотите перенести счет : ");
+				var bankId = in.nextInt();
+				System.out.println("Введите номер платежного счета, который хотите перенести\nесли переносить платежный счет не нужно введите -1 : ");
+				var payAccId = in.nextInt();
+				System.out.println("Введите номер кредитного счета, который хотите перенести\n если переносить кредитный счет не нужно введите -1 : ");
+				var creditAccId = in.nextInt();
+				userService.transfer(fileName, bankId, creditAccId, payAccId);
+				userService.saveToFileByUserId(fileNameNew, bankId, userId);
+				System.out.println("********************************************************: ");
+				System.out.println("Введите -1 для выхода : ");
+				System.out.println("Введите имя файла из которого хотите перенести счет : ");
+				in.nextLine();
+				fileName = in.nextLine();
+			}
 		}
 	}
 }
